@@ -23,53 +23,52 @@
 </head>
 <body>
     <h1>State & Insurance Settlement Funding Info - CBC Settlement Funding</h1>
-    
+   
     <h2>State & Insurance Search</h2>
     <label for="state">Select State:</label>
     <select id="state">
         <option value="">--Choose State--</option>
     </select>
-    
+   
     <label for="insurance">Select Insurance Company:</label>
     <select id="insurance">
         <option value="">--Choose Insurance--</option>
     </select>
-    
+   
     <button onclick="displayInfo()">Search</button>
-    
+   
     <div id="info"></div>
-    
+   
     <h2>Court Guide (Timelines, Judges, Feedback)</h2>
-<p>Filter by state using the dropdown below. Data from your 2018-2025 records.</p>
-
-<div id="summary"></div>
-
-<!-- New State Dropdown Filter -->
-<label for="stateFilter">Filter by State:</label>
-<select id="stateFilter" onchange="populateStateFilter()">
-    <option value="all">All States</option>
-    <!-- Options will be populated automatically -->
-</select>
-
-<table id="courtTable">
-    <thead>
-        <tr>
-            <th onclick="sortTable(0)">Jurisdiction</th>
-            <th onclick="sortTable(1)">Judge</th>
-            <th onclick="sortTable(2)">Avg Time to Court Date</th>
-            <th onclick="sortTable(3)">Avg Future Offset</th>
-            <th onclick="sortTable(4)">Difficulty</th>
-            <th onclick="sortTable(5)">Approval Rate</th>
-            <th onclick="sortTable(6)">Total Cases</th>
-            <th onclick="sortTable(7)">Denial/Dismissal Notes</th>
-            <th onclick="sortTable(8)">Attorney-Client-IPA Info</th>
-        </tr>
-    </thead>
-    <tbody id="courtBody"></tbody>
-</table>
-
-<button onclick="exportCSV()">Export Table as CSV</button>
+    <p>Filter by state using the dropdown below. Data from your 2018-2025 records.</p>
     
+    <div id="summary"></div>
+    
+    <!-- State Dropdown Filter -->
+    <label for="stateFilter">Filter by State:</label>
+    <select id="stateFilter" onchange="displayCourtGuide()">
+        <option value="all">All States</option>
+    </select>
+
+    <table id="courtTable">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0)">Jurisdiction</th>
+                <th onclick="sortTable(1)">Judge</th>
+                <th onclick="sortTable(2)">Avg Time to Court Date</th>
+                <th onclick="sortTable(3)">Avg Future Offset</th>
+                <th onclick="sortTable(4)">Difficulty</th>
+                <th onclick="sortTable(5)">Approval Rate</th>
+                <th onclick="sortTable(6)">Total Cases</th>
+                <th onclick="sortTable(7)">Denial/Dismissal Notes</th>
+                <th onclick="sortTable(8)">Attorney-Client-IPA Info</th>
+            </tr>
+        </thead>
+        <tbody id="courtBody"></tbody>
+    </table>
+    
+    <button onclick="exportCSV()">Export Table as CSV</button>
+   
     <h2>Add New Info</h2>
     <form id="addForm">
         <label for="type">Type:</label>
@@ -78,40 +77,40 @@
             <option value="insurance">Insurance</option>
             <option value="court">Court Guide</option>
         </select>
-        
+       
         <label for="name">Name (State/Insurance/Judge):</label>
         <input type="text" id="name"><br>
-        
+       
         <label for="jurisdiction" class="courtField hidden">Jurisdiction (e.g., State/County):</label>
         <input type="text" id="jurisdiction" class="courtField hidden"><br>
-        
+       
         <label for="avgTimeToDate" class="courtField hidden">Avg Time to Get Court Date (e.g., 4-6 weeks):</label>
         <input type="text" id="avgTimeToDate" class="courtField hidden"><br>
-        
+       
         <label for="avgFutureOffset" class="courtField hidden">Avg Future Court Date Offset (e.g., 3 months):</label>
         <input type="text" id="avgFutureOffset" class="courtField hidden"><br>
-        
+       
         <label for="difficulty" class="courtField hidden">Judge Difficulty (easy/medium/hard):</label>
         <input type="text" id="difficulty" class="courtField hidden"><br>
-        
+       
         <label for="approvalRate" class="courtField hidden">Approval Rate (e.g., 75%):</label>
         <input type="text" id="approvalRate" class="courtField hidden"><br>
-        
+       
         <label for="totalCases" class="courtField hidden">Total Cases:</label>
         <input type="number" id="totalCases" class="courtField hidden"><br>
-        
+       
         <label for="denialNotes" class="courtField hidden">Denial/Dismissal Notes:</label>
         <textarea id="denialNotes" class="courtField hidden"></textarea><br>
-        
+       
         <label for="ipaInfo" class="courtField hidden">Attorney-Client-IPA Info:</label>
         <textarea id="ipaInfo" class="courtField hidden"></textarea><br>
-        
+       
         <label for="details">General Details (for State/Insurance):</label>
         <textarea id="details"></textarea><br>
-        
+       
         <button type="button" onclick="addInfo()">Add</button>
     </form>
-    
+   
     <script>
         let data = {
             states: {
@@ -124,358 +123,555 @@
                 "State Farm": "State Farm prefers quick settlements; funding companies report 70% approval rate for auto claims.",
                 "Geico": "Geico cases fund faster for personal injury; average advance: $10k-50k."
             },
-        courtGuide: [
-    {
-        jurisdiction: "Cabell County Courthouse, Huntington, WV",
-        judge: "Alfred Ferguson / George Erickson",
-        avgTimeToDate: "Unknown (typically 4-8 weeks for WV)",
-        avgFutureOffset: "1-3 months",
-        difficulty: "Medium",
-        approvalRate: "100%",
-        totalCases: 2,
-        denialNotes: "",
-        ipaInfo: "Standard IPA required; virtual/in-person common"
-    },
-    {
-        jurisdiction: "Mobile County Courthouse, Mobile, AL",
-        judge: "Various",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Easy",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "In-person hearings; clear funds use documentation"
-    },
-    {
-        jurisdiction: "Henry Superior Courthouse, McDonough, GA",
-        judge: "Pandora E. Palmer",
-        avgTimeToDate: "Unknown (GA often 6-10 weeks)",
-        avgFutureOffset: "2-4 months",
-        difficulty: "Easy",
-        approvalRate: "100%",
-        totalCases: 2,
-        denialNotes: "",
-        ipaInfo: "In-person common; strong best-interest emphasis"
-    },
-    {
-        jurisdiction: "Cobb County Superior Courthouse, Marietta, GA",
-        judge: "Kellie Hill",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Easy",
-        approvalRate: "100%",
-        totalCases: 3,
-        denialNotes: "",
-        ipaInfo: "Courtroom 5100; in-person; client appearance key"
-    },
-    {
-        jurisdiction: "Phelps County Courthouse, Rolla, MO",
-        judge: "Fox",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Medium",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "2nd Floor; submission or in-person"
-    },
-    {
-        jurisdiction: "Beaver County Courthouse, Beaver, PA",
-        judge: "Ross / James L. Ross",
-        avgTimeToDate: "Unknown (PA 8-12 weeks common)",
-        avgFutureOffset: "2-5 months",
-        difficulty: "Medium-Hard",
-        approvalRate: "100%",
-        totalCases: 2,
-        denialNotes: "PA scrutiny on priors/docs",
-        ipaInfo: "Courtroom 2/6; in-person; detailed IPA mandatory"
-    },
-    {
-        jurisdiction: "Tom Green County Courthouse, San Angelo, TX",
-        judge: "Gonzalo Rios / Carmen Symes Dusek",
-        avgTimeToDate: "4-8 weeks (TX average)",
-        avgFutureOffset: "1-3 months",
-        difficulty: "Easy",
-        approvalRate: "100%",
-        totalCases: 3,
-        denialNotes: "",
-        ipaInfo: "In-person; routine approvals with docs"
-    },
-    {
-        jurisdiction: "Harris County Civil Courthouse, Houston, TX",
-        judge: "Tanya Garrison / Kyle Carter / Fredericka Phillips",
-        avgTimeToDate: "4-7 weeks",
-        avgFutureOffset: "1-4 months",
-        difficulty: "Easy",
-        approvalRate: "100%",
-        totalCases: 5,
-        denialNotes: "",
-        ipaInfo: "157th/125th Districts; Zoom/in-person; standard process"
-    },
-    {
-        jurisdiction: "Wilcox County Courthouse, Camden, AL",
-        judge: "Various",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Easy",
-        approvalRate: "100%",
-        totalCases: 2,
-        denialNotes: "",
-        ipaInfo: "Annex; in-person"
-    },
-    {
-        jurisdiction: "Lee County Courthouse, Tupelo, MS",
-        judge: "Various",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Easy",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "In-person"
-    },
-    {
-        jurisdiction: "Bryan County Courthouse, Pembroke, GA",
-        judge: "Glen Cheney",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Easy",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "In-person"
-    },
-    {
-        jurisdiction: "Rock County Courthouse, Janesville, WI",
-        judge: "Hansen",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Medium",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "Floor 2, Courtroom A; in-person"
-    },
-    {
-        jurisdiction: "Stanley Mosk Courthouse, Los Angeles, CA",
-        judge: "Various (Dept 76)",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Medium",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "In-person Dept 76"
-    },
-    {
-        jurisdiction: "Harrison County Courthouse, Clarksburg, WV",
-        judge: "Joseph Shaffer",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Medium",
-        approvalRate: "100%",
-        totalCases: 2,
-        denialNotes: "",
-        ipaInfo: "In-person; Phone: 304-624-8640"
-    },
-    {
-        jurisdiction: "Oconee County Courthouse, Walhalla, SC",
-        judge: "R. Scott Sprouse",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Easy",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "In-person"
-    },
-    {
-        jurisdiction: "Putnam County Courthouse, Carmel, NY",
-        judge: "Various",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Hard",
-        approvalRate: "50%",
-        totalCases: 1,
-        denialNotes: "NY priors scrutiny",
-        ipaInfo: "In-person Room 401"
-    },
-    {
-        jurisdiction: "Collin County Courthouse, McKinney, TX",
-        judge: "Various (471st District)",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Easy",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "In-person"
-    },
-    {
-        jurisdiction: "Erie County Courthouse, Erie, PA",
-        judge: "Various",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Medium-Hard",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "Court Room I; in-person"
-    },
-    {
-        jurisdiction: "Jefferson County Courthouse, Birmingham, AL",
-        judge: "Bolling",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Easy",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "716 Richard Arrington Jr Blvd N; in-person"
-    },
-    {
-        jurisdiction: "Wilson County Courthouse, Wilson, NC",
-        judge: "Various",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Easy",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "115 Nash Street East; in-person"
-    },
-    {
-        jurisdiction: "Williamson County Courthouse, Georgetown, TX",
-        judge: "Will Ward",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Easy",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "County Court at Law No. 5; in-person"
-    },
-    {
-        jurisdiction: "Llano County Courthouse, Llano, TX",
-        judge: "Evan C. Stubbs",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Easy",
-        approvalRate: "100%",
-        totalCases: 2,
-        denialNotes: "",
-        ipaInfo: "424th District; in-person"
-    },
-    {
-        jurisdiction: "Pickens County Courthouse, Pickens, SC",
-        judge: "Patrick Fant, III",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Easy",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "Circuit Judge; in-person"
-    },
-    {
-        jurisdiction: "Stafford County Circuit Court, Stafford, VA",
-        judge: "Various",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Medium",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "1300 Courthouse Road; in-person"
-    },
-    {
-        jurisdiction: "Smith County Courthouse, Tyler, TX",
-        judge: "Debby Gunter",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Easy",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "241st District; in-person"
-    },
-    {
-        jurisdiction: "Lincoln County Courthouse, Lincolnton, NC",
-        judge: "Various",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Easy",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "Courtroom 3C; in-person"
-    },
-    {
-        jurisdiction: "Buchanan Co. Courthouse, Saint Joseph, MO",
-        judge: "Terry Ellis White",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Medium",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "Division 3; in-person"
-    },
-    {
-        jurisdiction: "Kaufman County Courthouse, Kaufman, TX",
-        judge: "Shelton T.W. Gibbs",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Easy",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "422nd District; in-person"
-    },
-    {
-        jurisdiction: "Oklahoma County Courthouse, Oklahoma City, OK",
-        judge: "Anthony L. Bonner, Jr.",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Medium",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "Room 304; in-person"
-    },
-    {
-        jurisdiction: "Lamar County Superior Courthouse, Barnesville, GA",
-        judge: "Various",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Easy",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "In-person"
-    },
-    {
-        jurisdiction: "Creek County Courthouse, Sapulpa, OK",
-        judge: "Various",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Medium",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "Room 1; in-person"
-    },
-    {
-        jurisdiction: "Greene County Courthouse, Springfield, MO",
-        judge: "Nathan Taylor",
-        avgTimeToDate: "Unknown",
-        avgFutureOffset: "Unknown",
-        difficulty: "Medium",
-        approvalRate: "100%",
-        totalCases: 1,
-        denialNotes: "",
-        ipaInfo: "Division 7; in-person"
-    }
-    // Add more from Book.xlsx when available; current rates favor approvals here
-],
+            courtGuide: [
+                {
+                    jurisdiction: "Cabell County Courthouse, Huntington, WV",
+                    judge: "Alfred Ferguson / George Erickson",
+                    avgTimeToDate: "Unknown (typically 4-8 weeks for WV)",
+                    avgFutureOffset: "1-3 months",
+                    difficulty: "Medium",
+                    approvalRate: "100%",
+                    totalCases: 2,
+                    denialNotes: "",
+                    ipaInfo: "Standard IPA required; virtual/in-person common"
+                },
+                {
+                    jurisdiction: "Mobile County Courthouse, Mobile, AL",
+                    judge: "Various",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Easy",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "In-person hearings; clear funds use documentation"
+                },
+                {
+                    jurisdiction: "Henry Superior Courthouse, McDonough, GA",
+                    judge: "Pandora E. Palmer",
+                    avgTimeToDate: "Unknown (GA often 6-10 weeks)",
+                    avgFutureOffset: "2-4 months",
+                    difficulty: "Easy",
+                    approvalRate: "100%",
+                    totalCases: 2,
+                    denialNotes: "",
+                    ipaInfo: "In-person common; strong best-interest emphasis"
+                },
+                {
+                    jurisdiction: "Cobb County Superior Courthouse, Marietta, GA",
+                    judge: "Kellie Hill",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Easy",
+                    approvalRate: "100%",
+                    totalCases: 3,
+                    denialNotes: "",
+                    ipaInfo: "Courtroom 5100; in-person; client appearance key"
+                },
+                {
+                    jurisdiction: "Phelps County Courthouse, Rolla, MO",
+                    judge: "Fox",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Medium",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "2nd Floor; submission or in-person"
+                },
+                {
+                    jurisdiction: "Beaver County Courthouse, Beaver, PA",
+                    judge: "Ross / James L. Ross",
+                    avgTimeToDate: "Unknown (PA 8-12 weeks common)",
+                    avgFutureOffset: "2-5 months",
+                    difficulty: "Medium-Hard",
+                    approvalRate: "100%",
+                    totalCases: 2,
+                    denialNotes: "PA scrutiny on priors/docs",
+                    ipaInfo: "Courtroom 2/6; in-person; detailed IPA mandatory"
+                },
+                {
+                    jurisdiction: "Tom Green County Courthouse, San Angelo, TX",
+                    judge: "Gonzalo Rios / Carmen Symes Dusek",
+                    avgTimeToDate: "4-8 weeks (TX average)",
+                    avgFutureOffset: "1-3 months",
+                    difficulty: "Easy",
+                    approvalRate: "100%",
+                    totalCases: 3,
+                    denialNotes: "",
+                    ipaInfo: "In-person; routine approvals with docs"
+                },
+                {
+                    jurisdiction: "Harris County Civil Courthouse, Houston, TX",
+                    judge: "Tanya Garrison / Kyle Carter / Fredericka Phillips",
+                    avgTimeToDate: "4-7 weeks",
+                    avgFutureOffset: "1-4 months",
+                    difficulty: "Easy",
+                    approvalRate: "100%",
+                    totalCases: 5,
+                    denialNotes: "",
+                    ipaInfo: "157th/125th Districts; Zoom/in-person; standard process"
+                },
+                {
+                    jurisdiction: "Wilcox County Courthouse, Camden, AL",
+                    judge: "Various",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Easy",
+                    approvalRate: "100%",
+                    totalCases: 2,
+                    denialNotes: "",
+                    ipaInfo: "Annex; in-person"
+                },
+                {
+                    jurisdiction: "Lee County Courthouse, Tupelo, MS",
+                    judge: "Various",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Easy",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "In-person"
+                },
+                {
+                    jurisdiction: "Bryan County Courthouse, Pembroke, GA",
+                    judge: "Glen Cheney",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Easy",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "In-person"
+                },
+                {
+                    jurisdiction: "Rock County Courthouse, Janesville, WI",
+                    judge: "Hansen",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Medium",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "Floor 2, Courtroom A; in-person"
+                },
+                {
+                    jurisdiction: "Stanley Mosk Courthouse, Los Angeles, CA",
+                    judge: "Various (Dept 76)",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Medium",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "In-person Dept 76"
+                },
+                {
+                    jurisdiction: "Harrison County Courthouse, Clarksburg, WV",
+                    judge: "Joseph Shaffer",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Medium",
+                    approvalRate: "100%",
+                    totalCases: 2,
+                    denialNotes: "",
+                    ipaInfo: "In-person; Phone: 304-624-8640"
+                },
+                {
+                    jurisdiction: "Oconee County Courthouse, Walhalla, SC",
+                    judge: "R. Scott Sprouse",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Easy",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "In-person"
+                },
+                {
+                    jurisdiction: "Putnam County Courthouse, Carmel, NY",
+                    judge: "Various",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Hard",
+                    approvalRate: "50%",
+                    totalCases: 1,
+                    denialNotes: "NY priors scrutiny",
+                    ipaInfo: "In-person Room 401"
+                },
+                {
+                    jurisdiction: "Collin County Courthouse, McKinney, TX",
+                    judge: "Various (471st District)",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Easy",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "In-person"
+                },
+                {
+                    jurisdiction: "Erie County Courthouse, Erie, PA",
+                    judge: "Various",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Medium-Hard",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "Court Room I; in-person"
+                },
+                {
+                    jurisdiction: "Jefferson County Courthouse, Birmingham, AL",
+                    judge: "Bolling",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Easy",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "716 Richard Arrington Jr Blvd N; in-person"
+                },
+                {
+                    jurisdiction: "Wilson County Courthouse, Wilson, NC",
+                    judge: "Various",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Easy",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "115 Nash Street East; in-person"
+                },
+                {
+                    jurisdiction: "Williamson County Courthouse, Georgetown, TX",
+                    judge: "Will Ward",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Easy",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "County Court at Law No. 5; in-person"
+                },
+                {
+                    jurisdiction: "Llano County Courthouse, Llano, TX",
+                    judge: "Evan C. Stubbs",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Easy",
+                    approvalRate: "100%",
+                    totalCases: 2,
+                    denialNotes: "",
+                    ipaInfo: "424th District; in-person"
+                },
+                {
+                    jurisdiction: "Pickens County Courthouse, Pickens, SC",
+                    judge: "Patrick Fant, III",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Easy",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "Circuit Judge; in-person"
+                },
+                {
+                    jurisdiction: "Stafford County Circuit Court, Stafford, VA",
+                    judge: "Various",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Medium",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "1300 Courthouse Road; in-person"
+                },
+                {
+                    jurisdiction: "Smith County Courthouse, Tyler, TX",
+                    judge: "Debby Gunter",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Easy",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "241st District; in-person"
+                },
+                {
+                    jurisdiction: "Lincoln County Courthouse, Lincolnton, NC",
+                    judge: "Various",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Easy",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "Courtroom 3C; in-person"
+                },
+                {
+                    jurisdiction: "Buchanan Co. Courthouse, Saint Joseph, MO",
+                    judge: "Terry Ellis White",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Medium",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "Division 3; in-person"
+                },
+                {
+                    jurisdiction: "Kaufman County Courthouse, Kaufman, TX",
+                    judge: "Shelton T.W. Gibbs",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Easy",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "422nd District; in-person"
+                },
+                {
+                    jurisdiction: "Oklahoma County Courthouse, Oklahoma City, OK",
+                    judge: "Anthony L. Bonner, Jr.",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Medium",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "Room 304; in-person"
+                },
+                {
+                    jurisdiction: "Lamar County Superior Courthouse, Barnesville, GA",
+                    judge: "Various",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Easy",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "In-person"
+                },
+                {
+                    jurisdiction: "Creek County Courthouse, Sapulpa, OK",
+                    judge: "Various",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Medium",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "Room 1; in-person"
+                },
+                {
+                    jurisdiction: "Greene County Courthouse, Springfield, MO",
+                    judge: "Nathan Taylor",
+                    avgTimeToDate: "Unknown",
+                    avgFutureOffset: "Unknown",
+                    difficulty: "Medium",
+                    approvalRate: "100%",
+                    totalCases: 1,
+                    denialNotes: "",
+                    ipaInfo: "Division 7; in-person"
+                }
+            ]
+        };
+
+        // Load saved data from localStorage
+        if (localStorage.getItem('settlementData')) {
+            data = JSON.parse(localStorage.getItem('settlementData'));
+        }
+
+        // Populate original state/insurance dropdowns
+        function populateDropdowns() {
+            const stateSelect = document.getElementById('state');
+            const insuranceSelect = document.getElementById('insurance');
+            stateSelect.innerHTML = '<option value="">--Choose State--</option>';
+            insuranceSelect.innerHTML = '<option value="">--Choose Insurance--</option>';
+            for (let state in data.states) {
+                stateSelect.innerHTML += `<option value="${state}">${state}</option>`;
+            }
+            for (let ins in data.insurances) {
+                insuranceSelect.innerHTML += `<option value="${ins}">${ins}</option>`;
+            }
+        }
+
+        // NEW: Populate Court Guide state filter dropdown
+        function populateStateFilter() {
+            const stateFilter = document.getElementById('stateFilter');
+            const states = new Set();
+            stateFilter.innerHTML = '<option value="all">All States</option>'; // reset
+
+            data.courtGuide.forEach(entry => {
+                const match = entry.jurisdiction.match(/,\s*([A-Z]{2})$/i);
+                if (match) states.add(match[1].toUpperCase());
+            });
+
+            [...states].sort().forEach(state => {
+                const option = document.createElement('option');
+                option.value = state;
+                option.textContent = state;
+                stateFilter.appendChild(option);
+            });
+        }
+
+        function displayInfo() {
+            const state = document.getElementById('state').value;
+            const insurance = document.getElementById('insurance').value;
+            let output = '';
+            if (state) output += `<h3>${state}</h3><p>${data.states[state]}</p>`;
+            if (insurance) output += `<h3>${insurance}</h3><p>${data.insurances[insurance]}</p>`;
+            document.getElementById('info').innerHTML = output || '<p>No selection made.</p>';
+        }
+
+        // Court Guide display with state filter
+        function displayCourtGuide() {
+            const selectedState = document.getElementById('stateFilter').value.toUpperCase();
+            const tbody = document.getElementById('courtBody');
+            tbody.innerHTML = '';
+            let totalCases = 0, totalApprovals = 0;
+
+            data.courtGuide
+                .filter(entry => {
+                    if (selectedState === 'ALL') return true;
+                    const match = entry.jurisdiction.match(/,\s*([A-Z]{2})$/i);
+                    return match && match[1].toUpperCase() === selectedState;
+                })
+                .forEach(entry => {
+                    const rateNum = parseFloat(entry.approvalRate) || 0;
+                    const rateClass = rateNum > 70 ? 'high' : rateNum > 40 ? 'medium-rate' : 'low';
+                    const diffClass = entry.difficulty.toLowerCase() === 'easy' ? 'easy' : 
+                                      entry.difficulty.toLowerCase() === 'medium' ? 'medium' : 'hard';
+                    
+                    tbody.innerHTML += `
+                        <tr class="${diffClass}">
+                            <td>${entry.jurisdiction}</td>
+                            <td>${entry.judge || 'N/A'}</td>
+                            <td>${entry.avgTimeToDate}</td>
+                            <td>${entry.avgFutureOffset}</td>
+                            <td>${entry.difficulty}</td>
+                            <td class="${rateClass}">${entry.approvalRate}</td>
+                            <td>${entry.totalCases || 'N/A'}</td>
+                            <td>${entry.denialNotes}</td>
+                            <td>${entry.ipaInfo}</td>
+                        </tr>
+                    `;
+                    totalCases += entry.totalCases || 0;
+                    totalApprovals += (entry.totalCases * rateNum / 100) || 0;
+                });
+
+            if (tbody.innerHTML === '') {
+                tbody.innerHTML = '<tr><td colspan="9">No matching entries for selected state.</td></tr>';
+            }
+
+            const overallRate = totalCases > 0 ? Math.round((totalApprovals / totalCases) * 100) : 0;
+            document.getElementById('summary').innerHTML = 
+                `Showing ${totalCases} cases | ~${overallRate}% approval (filtered by state).`;
+        }
+
+        // Sorting function
+        let sortDir = {};
+        function sortTable(colIndex) {
+            const tbody = document.getElementById('courtBody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            if (rows.length === 0) return;
+
+            const dir = sortDir[colIndex] = (sortDir[colIndex] === 'asc' ? 'desc' : 'asc');
+            rows.sort((a, b) => {
+                const aVal = a.cells[colIndex].textContent.trim();
+                const bVal = b.cells[colIndex].textContent.trim();
+                if (!isNaN(parseFloat(aVal))) {
+                    return dir === 'asc' ? parseFloat(aVal) - parseFloat(bVal) : parseFloat(bVal) - parseFloat(aVal);
+                }
+                return dir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+            });
+            tbody.innerHTML = '';
+            rows.forEach(row => tbody.appendChild(row));
+        }
+
+        // Export to CSV
+        function exportCSV() {
+            const rows = [['Jurisdiction', 'Judge', 'Avg Time', 'Offset', 'Difficulty', 'Approval Rate', 'Total Cases', 'Denial Notes', 'IPA Info']];
+            document.querySelectorAll('#courtBody tr').forEach(tr => {
+                const row = Array.from(tr.cells).map(td => td.textContent.trim());
+                rows.push(row);
+            });
+            const csv = rows.map(row => row.join(',')).join('\n');
+            const blob = new Blob([csv], {type: 'text/csv'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'court_guide.csv';
+            a.click();
+        }
+
+        // Toggle court fields
+        function toggleCourtFields() {
+            const type = document.getElementById('type').value;
+            const courtFields = document.querySelectorAll('.courtField');
+            const detailsLabel = document.querySelector('label[for="details"]');
+            courtFields.forEach(field => field.classList.toggle('hidden', type !== 'court'));
+            detailsLabel.classList.toggle('hidden', type === 'court');
+            document.getElementById('details').classList.toggle('hidden', type === 'court');
+        }
+
+        // Add info
+        function addInfo() {
+            const type = document.getElementById('type').value;
+            const name = document.getElementById('name').value.trim();
+            const details = document.getElementById('details').value.trim();
+            
+            if (type === 'state' || type === 'insurance') {
+                if (!name || !details) {
+                    alert('Please fill in name and details.');
+                    return;
+                }
+                if (type === 'state') data.states[name] = details;
+                else data.insurances[name] = details;
+            } else if (type === 'court') {
+                const jurisdiction = document.getElementById('jurisdiction').value.trim();
+                const avgTimeToDate = document.getElementById('avgTimeToDate').value.trim();
+                const avgFutureOffset = document.getElementById('avgFutureOffset').value.trim();
+                const difficulty = document.getElementById('difficulty').value.trim();
+                const approvalRate = document.getElementById('approvalRate').value.trim();
+                const totalCases = parseInt(document.getElementById('totalCases').value) || 1;
+                const denialNotes = document.getElementById('denialNotes').value.trim();
+                const ipaInfo = document.getElementById('ipaInfo').value.trim();
+                
+                if (!name || !jurisdiction || !difficulty || !approvalRate) {
+                    alert('Please fill in all required court fields.');
+                    return;
+                }
+                
+                data.courtGuide.push({
+                    jurisdiction,
+                    judge: name,
+                    avgTimeToDate,
+                    avgFutureOffset,
+                    difficulty,
+                    approvalRate,
+                    totalCases,
+                    denialNotes,
+                    ipaInfo
+                });
+            }
+            
+            localStorage.setItem('settlementData', JSON.stringify(data));
+            populateDropdowns();
+            populateStateFilter(); // Refresh state dropdown
+            displayCourtGuide();
+            displayInfo();
+            alert('Info added!');
+            document.getElementById('addForm').reset();
+            toggleCourtFields();
+        }
+
+        // Initial setup
+        populateDropdowns();       // Original state/insurance
+        populateStateFilter();     // Court Guide state filter
+        displayCourtGuide();       // Show initial table
+    </script>
+</body>
+</html>
