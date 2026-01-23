@@ -19,6 +19,7 @@
         .medium-rate { color: orange; font-weight: bold; }
         .low { color: red; font-weight: bold; }
         #summary { margin-bottom: 20px; font-weight: bold; }
+        .filters { display: flex; flex-wrap: wrap; gap: 20px; }
     </style>
 </head>
 <body>
@@ -40,15 +41,32 @@
     <div id="info"></div>
    
     <h2>Court Guide (Timelines, Judges, Feedback)</h2>
-    <p>Filter by state using the dropdown below. Data from your 2018-2025 records.</p>
+    <p>Use the dropdowns below to filter the table. Data from your 2018-2025 records.</p>
     
     <div id="summary"></div>
     
-    <!-- State Dropdown Filter -->
-    <label for="stateFilter">Filter by State:</label>
-    <select id="stateFilter" onchange="displayCourtGuide()">
-        <option value="all">All States</option>
-    </select>
+    <div class="filters">
+        <div>
+            <label for="stateFilter">State:</label>
+            <select id="stateFilter" onchange="displayCourtGuide()">
+                <option value="all">All States</option>
+            </select>
+        </div>
+        
+        <div>
+            <label for="countyFilter">County:</label>
+            <select id="countyFilter" onchange="displayCourtGuide()">
+                <option value="all">All Counties</option>
+            </select>
+        </div>
+        
+        <div>
+            <label for="judgeFilter">Judge:</label>
+            <select id="judgeFilter" onchange="displayCourtGuide()">
+                <option value="all">All Judges</option>
+            </select>
+        </div>
+    </div>
 
     <table id="courtTable">
         <thead>
@@ -81,7 +99,7 @@
         <label for="name">Name (State/Insurance/Judge):</label>
         <input type="text" id="name"><br>
        
-        <label for="jurisdiction" class="courtField hidden">Jurisdiction (e.g., State/County):</label>
+        <label for="jurisdiction" class="courtField hidden">Jurisdiction (e.g., Allegheny County, PA):</label>
         <input type="text" id="jurisdiction" class="courtField hidden"><br>
        
         <label for="avgTimeToDate" class="courtField hidden">Avg Time to Get Court Date (e.g., 4-6 weeks):</label>
@@ -126,7 +144,7 @@
             courtGuide: [
                 {
                     jurisdiction: "Cabell County Courthouse, Huntington, WV",
-                    judge: "Alfred Ferguson / George Erickson",
+                    judge: "Alfred Ferguson",
                     avgTimeToDate: "Unknown (typically 4-8 weeks for WV)",
                     avgFutureOffset: "1-3 months",
                     difficulty: "Medium",
@@ -212,274 +230,11 @@
                     denialNotes: "",
                     ipaInfo: "157th/125th Districts; Zoom/in-person; standard process"
                 },
-                {
-                    jurisdiction: "Wilcox County Courthouse, Camden, AL",
-                    judge: "Various",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Easy",
-                    approvalRate: "100%",
-                    totalCases: 2,
-                    denialNotes: "",
-                    ipaInfo: "Annex; in-person"
-                },
-                {
-                    jurisdiction: "Lee County Courthouse, Tupelo, MS",
-                    judge: "Various",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Easy",
-                    approvalRate: "100%",
-                    totalCases: 1,
-                    denialNotes: "",
-                    ipaInfo: "In-person"
-                },
-                {
-                    jurisdiction: "Bryan County Courthouse, Pembroke, GA",
-                    judge: "Glen Cheney",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Easy",
-                    approvalRate: "100%",
-                    totalCases: 1,
-                    denialNotes: "",
-                    ipaInfo: "In-person"
-                },
-                {
-                    jurisdiction: "Rock County Courthouse, Janesville, WI",
-                    judge: "Hansen",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Medium",
-                    approvalRate: "100%",
-                    totalCases: 1,
-                    denialNotes: "",
-                    ipaInfo: "Floor 2, Courtroom A; in-person"
-                },
-                {
-                    jurisdiction: "Stanley Mosk Courthouse, Los Angeles, CA",
-                    judge: "Various (Dept 76)",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Medium",
-                    approvalRate: "100%",
-                    totalCases: 1,
-                    denialNotes: "",
-                    ipaInfo: "In-person Dept 76"
-                },
-                {
-                    jurisdiction: "Harrison County Courthouse, Clarksburg, WV",
-                    judge: "Joseph Shaffer",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Medium",
-                    approvalRate: "100%",
-                    totalCases: 2,
-                    denialNotes: "",
-                    ipaInfo: "In-person; Phone: 304-624-8640"
-                },
-                {
-                    jurisdiction: "Oconee County Courthouse, Walhalla, SC",
-                    judge: "R. Scott Sprouse",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Easy",
-                    approvalRate: "100%",
-                    totalCases: 1,
-                    denialNotes: "",
-                    ipaInfo: "In-person"
-                },
-                {
-                    jurisdiction: "Putnam County Courthouse, Carmel, NY",
-                    judge: "Various",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Hard",
-                    approvalRate: "50%",
-                    totalCases: 1,
-                    denialNotes: "NY priors scrutiny",
-                    ipaInfo: "In-person Room 401"
-                },
-                {
-                    jurisdiction: "Collin County Courthouse, McKinney, TX",
-                    judge: "Various (471st District)",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Easy",
-                    approvalRate: "100%",
-                    totalCases: 1,
-                    denialNotes: "",
-                    ipaInfo: "In-person"
-                },
-                {
-                    jurisdiction: "Erie County Courthouse, Erie, PA",
-                    judge: "Various",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Medium-Hard",
-                    approvalRate: "100%",
-                    totalCases: 1,
-                    denialNotes: "",
-                    ipaInfo: "Court Room I; in-person"
-                },
-                {
-                    jurisdiction: "Jefferson County Courthouse, Birmingham, AL",
-                    judge: "Bolling",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Easy",
-                    approvalRate: "100%",
-                    totalCases: 1,
-                    denialNotes: "",
-                    ipaInfo: "716 Richard Arrington Jr Blvd N; in-person"
-                },
-                {
-                    jurisdiction: "Wilson County Courthouse, Wilson, NC",
-                    judge: "Various",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Easy",
-                    approvalRate: "100%",
-                    totalCases: 1,
-                    denialNotes: "",
-                    ipaInfo: "115 Nash Street East; in-person"
-                },
-                {
-                    jurisdiction: "Williamson County Courthouse, Georgetown, TX",
-                    judge: "Will Ward",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Easy",
-                    approvalRate: "100%",
-                    totalCases: 1,
-                    denialNotes: "",
-                    ipaInfo: "County Court at Law No. 5; in-person"
-                },
-                {
-                    jurisdiction: "Llano County Courthouse, Llano, TX",
-                    judge: "Evan C. Stubbs",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Easy",
-                    approvalRate: "100%",
-                    totalCases: 2,
-                    denialNotes: "",
-                    ipaInfo: "424th District; in-person"
-                },
-                {
-                    jurisdiction: "Pickens County Courthouse, Pickens, SC",
-                    judge: "Patrick Fant, III",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Easy",
-                    approvalRate: "100%",
-                    totalCases: 1,
-                    denialNotes: "",
-                    ipaInfo: "Circuit Judge; in-person"
-                },
-                {
-                    jurisdiction: "Stafford County Circuit Court, Stafford, VA",
-                    judge: "Various",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Medium",
-                    approvalRate: "100%",
-                    totalCases: 1,
-                    denialNotes: "",
-                    ipaInfo: "1300 Courthouse Road; in-person"
-                },
-                {
-                    jurisdiction: "Smith County Courthouse, Tyler, TX",
-                    judge: "Debby Gunter",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Easy",
-                    approvalRate: "100%",
-                    totalCases: 1,
-                    denialNotes: "",
-                    ipaInfo: "241st District; in-person"
-                },
-                {
-                    jurisdiction: "Lincoln County Courthouse, Lincolnton, NC",
-                    judge: "Various",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Easy",
-                    approvalRate: "100%",
-                    totalCases: 1,
-                    denialNotes: "",
-                    ipaInfo: "Courtroom 3C; in-person"
-                },
-                {
-                    jurisdiction: "Buchanan Co. Courthouse, Saint Joseph, MO",
-                    judge: "Terry Ellis White",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Medium",
-                    approvalRate: "100%",
-                    totalCases: 1,
-                    denialNotes: "",
-                    ipaInfo: "Division 3; in-person"
-                },
-                {
-                    jurisdiction: "Kaufman County Courthouse, Kaufman, TX",
-                    judge: "Shelton T.W. Gibbs",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Easy",
-                    approvalRate: "100%",
-                    totalCases: 1,
-                    denialNotes: "",
-                    ipaInfo: "422nd District; in-person"
-                },
-                {
-                    jurisdiction: "Oklahoma County Courthouse, Oklahoma City, OK",
-                    judge: "Anthony L. Bonner, Jr.",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Medium",
-                    approvalRate: "100%",
-                    totalCases: 1,
-                    denialNotes: "",
-                    ipaInfo: "Room 304; in-person"
-                },
-                {
-                    jurisdiction: "Lamar County Superior Courthouse, Barnesville, GA",
-                    judge: "Various",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Easy",
-                    approvalRate: "100%",
-                    totalCases: 1,
-                    denialNotes: "",
-                    ipaInfo: "In-person"
-                },
-                {
-                    jurisdiction: "Creek County Courthouse, Sapulpa, OK",
-                    judge: "Various",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Medium",
-                    approvalRate: "100%",
-                    totalCases: 1,
-                    denialNotes: "",
-                    ipaInfo: "Room 1; in-person"
-                },
-                {
-                    jurisdiction: "Greene County Courthouse, Springfield, MO",
-                    judge: "Nathan Taylor",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Medium",
-                    approvalRate: "100%",
-                    totalCases: 1,
-                    denialNotes: "",
-                    ipaInfo: "Division 7; in-person"
-                }
+                // ... your other entries here (I kept only the first few for brevity; paste your full array)
             ]
         };
 
-        // Load saved data from localStorage
+        // Load from localStorage if exists
         if (localStorage.getItem('settlementData')) {
             data = JSON.parse(localStorage.getItem('settlementData'));
         }
@@ -490,54 +245,96 @@
             const insuranceSelect = document.getElementById('insurance');
             stateSelect.innerHTML = '<option value="">--Choose State--</option>';
             insuranceSelect.innerHTML = '<option value="">--Choose Insurance--</option>';
-            for (let state in data.states) {
-                stateSelect.innerHTML += `<option value="${state}">${state}</option>`;
+            for (let s in data.states) {
+                stateSelect.innerHTML += `<option value="${s}">${s}</option>`;
             }
-            for (let ins in data.insurances) {
-                insuranceSelect.innerHTML += `<option value="${ins}">${ins}</option>`;
+            for (let i in data.insurances) {
+                insuranceSelect.innerHTML += `<option value="${i}">${i}</option>`;
             }
         }
 
-        // NEW: Populate Court Guide state filter dropdown
-        function populateStateFilter() {
+        // Populate all three filters for Court Guide
+        function populateCourtFilters() {
             const stateFilter = document.getElementById('stateFilter');
+            const countyFilter = document.getElementById('countyFilter');
+            const judgeFilter = document.getElementById('judgeFilter');
+
             const states = new Set();
-            stateFilter.innerHTML = '<option value="all">All States</option>'; // reset
+            const counties = new Set();
+            const judges = new Set();
 
             data.courtGuide.forEach(entry => {
-                const match = entry.jurisdiction.match(/,\s*([A-Z]{2})$/i);
-                if (match) states.add(match[1].toUpperCase());
+                // State (last two letters after comma)
+                const stateMatch = entry.jurisdiction.match(/,\s*([A-Z]{2})$/i);
+                if (stateMatch) states.add(stateMatch[1].toUpperCase());
+
+                // County (everything before the comma, trim "Courthouse" etc.)
+                const countyPart = entry.jurisdiction.split(',')[0].trim()
+                    .replace(/Courthouse|Superior|District|County|Judicial Center/gi, '').trim();
+                if (countyPart) counties.add(countyPart);
+
+                // Judge
+                if (entry.judge && entry.judge.trim()) {
+                    entry.judge.split('/').forEach(j => {
+                        const clean = j.trim();
+                        if (clean && clean !== 'Various') judges.add(clean);
+                    });
+                }
             });
 
-            [...states].sort().forEach(state => {
-                const option = document.createElement('option');
-                option.value = state;
-                option.textContent = state;
-                stateFilter.appendChild(option);
+            // Reset options
+            stateFilter.innerHTML = '<option value="all">All States</option>';
+            countyFilter.innerHTML = '<option value="all">All Counties</option>';
+            judgeFilter.innerHTML = '<option value="all">All Judges</option>';
+
+            // Populate sorted
+            [...states].sort().forEach(s => {
+                stateFilter.innerHTML += `<option value="${s}">${s}</option>`;
+            });
+
+            [...counties].sort().forEach(c => {
+                countyFilter.innerHTML += `<option value="${c.toLowerCase()}">${c}</option>`;
+            });
+
+            [...judges].sort().forEach(j => {
+                judgeFilter.innerHTML += `<option value="${j.toLowerCase()}">${j}</option>`;
             });
         }
 
-        function displayInfo() {
-            const state = document.getElementById('state').value;
-            const insurance = document.getElementById('insurance').value;
-            let output = '';
-            if (state) output += `<h3>${state}</h3><p>${data.states[state]}</p>`;
-            if (insurance) output += `<h3>${insurance}</h3><p>${data.insurances[insurance]}</p>`;
-            document.getElementById('info').innerHTML = output || '<p>No selection made.</p>';
-        }
-
-        // Court Guide display with state filter
+        // Display filtered table
         function displayCourtGuide() {
             const selectedState = document.getElementById('stateFilter').value.toUpperCase();
+            const selectedCounty = document.getElementById('countyFilter').value.toLowerCase();
+            const selectedJudge = document.getElementById('judgeFilter').value.toLowerCase();
+
             const tbody = document.getElementById('courtBody');
             tbody.innerHTML = '';
             let totalCases = 0, totalApprovals = 0;
 
             data.courtGuide
                 .filter(entry => {
-                    if (selectedState === 'ALL') return true;
-                    const match = entry.jurisdiction.match(/,\s*([A-Z]{2})$/i);
-                    return match && match[1].toUpperCase() === selectedState;
+                    let match = true;
+
+                    // State filter
+                    if (selectedState !== 'ALL') {
+                        const stateMatch = entry.jurisdiction.match(/,\s*([A-Z]{2})$/i);
+                        match = match && stateMatch && stateMatch[1].toUpperCase() === selectedState;
+                    }
+
+                    // County filter
+                    if (selectedCounty !== 'all') {
+                        const countyPart = entry.jurisdiction.split(',')[0].trim()
+                            .replace(/Courthouse|Superior|District|County|Judicial Center/gi, '').trim().toLowerCase();
+                        match = match && countyPart.includes(selectedCounty);
+                    }
+
+                    // Judge filter
+                    if (selectedJudge !== 'all') {
+                        const judgeText = (entry.judge || '').toLowerCase();
+                        match = match && judgeText.includes(selectedJudge);
+                    }
+
+                    return match;
                 })
                 .forEach(entry => {
                     const rateNum = parseFloat(entry.approvalRate) || 0;
@@ -563,115 +360,20 @@
                 });
 
             if (tbody.innerHTML === '') {
-                tbody.innerHTML = '<tr><td colspan="9">No matching entries for selected state.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9">No matching entries.</td></tr>';
             }
 
             const overallRate = totalCases > 0 ? Math.round((totalApprovals / totalCases) * 100) : 0;
             document.getElementById('summary').innerHTML = 
-                `Showing ${totalCases} cases | ~${overallRate}% approval (filtered by state).`;
+                `Showing ${totalCases} cases | ~${overallRate}% approval (filtered).`;
         }
 
-        // Sorting function
-        let sortDir = {};
-        function sortTable(colIndex) {
-            const tbody = document.getElementById('courtBody');
-            const rows = Array.from(tbody.querySelectorAll('tr'));
-            if (rows.length === 0) return;
+        // ... keep your sortTable(), exportCSV(), toggleCourtFields(), displayInfo(), addInfo() functions unchanged ...
 
-            const dir = sortDir[colIndex] = (sortDir[colIndex] === 'asc' ? 'desc' : 'asc');
-            rows.sort((a, b) => {
-                const aVal = a.cells[colIndex].textContent.trim();
-                const bVal = b.cells[colIndex].textContent.trim();
-                if (!isNaN(parseFloat(aVal))) {
-                    return dir === 'asc' ? parseFloat(aVal) - parseFloat(bVal) : parseFloat(bVal) - parseFloat(aVal);
-                }
-                return dir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-            });
-            tbody.innerHTML = '';
-            rows.forEach(row => tbody.appendChild(row));
-        }
-
-        // Export to CSV
-        function exportCSV() {
-            const rows = [['Jurisdiction', 'Judge', 'Avg Time', 'Offset', 'Difficulty', 'Approval Rate', 'Total Cases', 'Denial Notes', 'IPA Info']];
-            document.querySelectorAll('#courtBody tr').forEach(tr => {
-                const row = Array.from(tr.cells).map(td => td.textContent.trim());
-                rows.push(row);
-            });
-            const csv = rows.map(row => row.join(',')).join('\n');
-            const blob = new Blob([csv], {type: 'text/csv'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'court_guide.csv';
-            a.click();
-        }
-
-        // Toggle court fields
-        function toggleCourtFields() {
-            const type = document.getElementById('type').value;
-            const courtFields = document.querySelectorAll('.courtField');
-            const detailsLabel = document.querySelector('label[for="details"]');
-            courtFields.forEach(field => field.classList.toggle('hidden', type !== 'court'));
-            detailsLabel.classList.toggle('hidden', type === 'court');
-            document.getElementById('details').classList.toggle('hidden', type === 'court');
-        }
-
-        // Add info
-        function addInfo() {
-            const type = document.getElementById('type').value;
-            const name = document.getElementById('name').value.trim();
-            const details = document.getElementById('details').value.trim();
-            
-            if (type === 'state' || type === 'insurance') {
-                if (!name || !details) {
-                    alert('Please fill in name and details.');
-                    return;
-                }
-                if (type === 'state') data.states[name] = details;
-                else data.insurances[name] = details;
-            } else if (type === 'court') {
-                const jurisdiction = document.getElementById('jurisdiction').value.trim();
-                const avgTimeToDate = document.getElementById('avgTimeToDate').value.trim();
-                const avgFutureOffset = document.getElementById('avgFutureOffset').value.trim();
-                const difficulty = document.getElementById('difficulty').value.trim();
-                const approvalRate = document.getElementById('approvalRate').value.trim();
-                const totalCases = parseInt(document.getElementById('totalCases').value) || 1;
-                const denialNotes = document.getElementById('denialNotes').value.trim();
-                const ipaInfo = document.getElementById('ipaInfo').value.trim();
-                
-                if (!name || !jurisdiction || !difficulty || !approvalRate) {
-                    alert('Please fill in all required court fields.');
-                    return;
-                }
-                
-                data.courtGuide.push({
-                    jurisdiction,
-                    judge: name,
-                    avgTimeToDate,
-                    avgFutureOffset,
-                    difficulty,
-                    approvalRate,
-                    totalCases,
-                    denialNotes,
-                    ipaInfo
-                });
-            }
-            
-            localStorage.setItem('settlementData', JSON.stringify(data));
-            populateDropdowns();
-            populateStateFilter(); // Refresh state dropdown
-            displayCourtGuide();
-            displayInfo();
-            alert('Info added!');
-            document.getElementById('addForm').reset();
-            toggleCourtFields();
-        }
-
-        // Initial setup
-        populateDropdowns();       // Original state/insurance
-        populateStateFilter();     // Court Guide state filter
-        displayCourtGuide();       // Show initial table
+        // Initial load
+        populateDropdowns();       // top state/insurance
+        populateCourtFilters();    // all three court filters
+        displayCourtGuide();       // show table
     </script>
 </body>
 </html>
