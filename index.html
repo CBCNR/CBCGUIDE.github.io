@@ -40,30 +40,35 @@
     <div id="info"></div>
     
     <h2>Court Guide (Timelines, Judges, Feedback)</h2>
-    <p>Use this guide when setting up files: Search by jurisdiction or judge for estimates on court dates, difficulty, approvals/denials, etc.</p>
-    <div id="summary"></div>
-    
-    <label for="courtSearch">Search Court Guide (by Jurisdiction or Judge):</label>
-    <input type="text" id="courtSearch" oninput="displayCourtGuide()" placeholder="e.g., Pennsylvania or Judge Smith">
-    
-    <table id="courtTable">
-        <thead>
-            <tr>
-                <th onclick="sortTable(0)">Jurisdiction</th>
-                <th onclick="sortTable(1)">Judge</th>
-                <th onclick="sortTable(2)">Avg Time to Court Date</th>
-                <th onclick="sortTable(3)">Avg Future Offset</th>
-                <th onclick="sortTable(4)">Difficulty</th>
-                <th onclick="sortTable(5)">Approval Rate</th>
-                <th onclick="sortTable(6)">Total Cases</th>
-                <th onclick="sortTable(7)">Denial/Dismissal Notes</th>
-                <th onclick="sortTable(8)">Attorney-Client-IPA Info</th>
-            </tr>
-        </thead>
-        <tbody id="courtBody"></tbody>
-    </table>
-    
-    <button onclick="exportCSV()">Export Table as CSV</button>
+<p>Filter by state using the dropdown below. Data from your 2018-2025 records.</p>
+
+<div id="summary"></div>
+
+<!-- New State Dropdown Filter -->
+<label for="stateFilter">Filter by State:</label>
+<select id="stateFilter" onchange="populateStateFilter()">
+    <option value="all">All States</option>
+    <!-- Options will be populated automatically -->
+</select>
+
+<table id="courtTable">
+    <thead>
+        <tr>
+            <th onclick="sortTable(0)">Jurisdiction</th>
+            <th onclick="sortTable(1)">Judge</th>
+            <th onclick="sortTable(2)">Avg Time to Court Date</th>
+            <th onclick="sortTable(3)">Avg Future Offset</th>
+            <th onclick="sortTable(4)">Difficulty</th>
+            <th onclick="sortTable(5)">Approval Rate</th>
+            <th onclick="sortTable(6)">Total Cases</th>
+            <th onclick="sortTable(7)">Denial/Dismissal Notes</th>
+            <th onclick="sortTable(8)">Attorney-Client-IPA Info</th>
+        </tr>
+    </thead>
+    <tbody id="courtBody"></tbody>
+</table>
+
+<button onclick="exportCSV()">Export Table as CSV</button>
     
     <h2>Add New Info</h2>
     <form id="addForm">
@@ -119,7 +124,7 @@
                 "State Farm": "State Farm prefers quick settlements; funding companies report 70% approval rate for auto claims.",
                 "Geico": "Geico cases fund faster for personal injury; average advance: $10k-50k."
             },
-courtGuide: [
+        courtGuide: [
     {
         jurisdiction: "Cabell County Courthouse, Huntington, WV",
         judge: "Alfred Ferguson / George Erickson",
@@ -474,4 +479,3 @@ courtGuide: [
     }
     // Add more from Book.xlsx when available; current rates favor approvals here
 ],
-           
