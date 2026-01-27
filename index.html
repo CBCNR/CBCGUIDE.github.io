@@ -1,167 +1,314 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CBC Settlement Funding – Court Guide</title>
+  <meta charset="UTF-8" />
+  <title>Judicial Approval Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<style>
-body { font-family: Arial, sans-serif; background:#f5f7fa; margin:20px; }
-h1,h2 { color:#1a5fb4; }
-select, input, textarea, button { padding:8px; margin:6px 0; font-size:14px; }
-button { background:#1a5fb4; color:#fff; border:none; border-radius:4px; cursor:pointer; }
-button:hover { background:#0d47a1; }
-table { width:100%; border-collapse:collapse; margin-top:15px; background:#fff; }
-th,td { border:1px solid #ccc; padding:8px; }
-th { background:#1a5fb4; color:#fff; cursor:pointer; }
-.easy { background:#d4edda; }
-.medium { background:#fff3cd; }
-.hard { background:#f8d7da; }
-.high { color:green; font-weight:bold; }
-.filters { display:flex; gap:15px; flex-wrap:wrap; background:#e3f2fd; padding:15px; border-radius:6px; }
-#summary { font-weight:bold; margin-top:10px; color:#c62828; }
-</style>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --primary: #1f3a5f;
+      --accent: #3b82f6;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --success: #16a34a;
+      --danger: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 24px 32px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    header p {
+      margin-top: 6px;
+      opacity: 0.85;
+    }
+
+    main {
+      padding: 32px;
+      max-width: 1300px;
+      margin: auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 18px;
+      color: var(--primary);
+    }
+
+    .rate {
+      font-size: 36px;
+      font-weight: 700;
+      margin: 14px 0;
+      color: var(--accent);
+    }
+
+    .meta {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    /* MODAL */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      width: 95%;
+      max-width: 1100px;
+      max-height: 85vh;
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      color: var(--primary);
+    }
+
+    .close {
+      font-size: 22px;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    thead {
+      background: #f1f5f9;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .approve {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .deny {
+      color: var(--danger);
+      font-weight: 600;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+  </style>
 </head>
 
 <body>
 
-<h1>CBC Settlement Funding – Court Guide</h1>
+<header>
+  <h1>Judicial Approval Dashboard</h1>
+  <p>Click a state to view judge-level details</p>
+</header>
 
-<h2>Filters</h2>
-<div class="filters">
-<select id="stateFilter" onchange="displayCourtGuide()"></select>
-<select id="countyFilter" onchange="displayCourtGuide()"></select>
-<select id="judgeFilter" onchange="displayCourtGuide()"></select>
+<main>
+  <div id="dashboard" class="grid"></div>
+</main>
+
+<footer>
+  All judges • all jurisdictions • no records omitted
+</footer>
+
+<!-- MODAL -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modalTitle"></h3>
+      <span class="close" onclick="closeModal()">×</span>
+    </div>
+    <div style="overflow:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>Judge</th>
+            <th>Jurisdiction</th>
+            <th>Approvals</th>
+            <th>Denials</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="modalTable"></tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
-<div id="summary"></div>
-
-<table id="courtTable">
-<thead>
-<tr>
-<th onclick="sortTable(0)">Jurisdiction</th>
-<th onclick="sortTable(1)">Judge</th>
-<th onclick="sortTable(2)">Avg Time</th>
-<th onclick="sortTable(3)">Future Offset</th>
-<th onclick="sortTable(4)">Difficulty</th>
-<th onclick="sortTable(5)">Approval</th>
-<th onclick="sortTable(6)">Cases</th>
-<th onclick="sortTable(7)">Notes</th>
-</tr>
-</thead>
-<tbody id="courtBody"></tbody>
-</table>
-
 <script>
-const US_STATES = {
-AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",
-CO:"Colorado",CT:"Connecticut",DE:"Delaware",FL:"Florida",GA:"Georgia",
-HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",
-KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",MA:"Massachusetts",
-MI:"Michigan",MN:"Minnesota",MS:"Mississippi",MO:"Missouri",MT:"Montana",
-NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",NM:"New Mexico",
-NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",
-OR:"Oregon",PA:"Pennsylvania",RI:"Rhode Island",SC:"South Carolina",
-SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",
-VA:"Virginia",WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming"
-};
+/* =====================================================
+   🔹 PASTE YOUR FULL DATASET HERE
+   ===================================================== */
 
-let data = {
-courtGuide: [
-{judge:"Bahir Kamil", county:"Unknown"},
-{judge:"Baldemar Garza", county:"Duval"},
-{judge:"Benjamin Nevius", county:"Berks"},
-{judge:"Benjamin N. Smith", county:"Collin"},
-{judge:"Brock Smith", county:"Wise"},
-{judge:"Christopher O'Donnell", county:"Cook"},
-{judge:"Daniel G. Garrett", county:"Greene"},
-{judge:"David L. Brantley", county:"Walton"},
-{judge:"Debby Gunter", county:"Smith"},
-{judge:"Elizabeth W. McCune", county:"Allegheny"},
-{judge:"Gonzalo Rios", county:"Tom Green"},
-{judge:"James L. Ross", county:"Beaver"},
-{judge:"Jennifer Schecter", county:"New York"},
-{judge:"John Gallagher", county:"Monroe"},
-{judge:"Joseph Shaffer", county:"Harrison"},
-{judge:"Kellie Hill", county:"Cobb"},
-{judge:"Nathan Taylor", county:"Greene"},
-{judge:"Patrick Fant III", county:"Pickens"},
-{judge:"Shelton T.W. Gibbs", county:"Kaufman"},
-{judge:"Thomas J. LaConte", county:"Passaic"},
-{judge:"Tonya Parker", county:"Dallas"},
-{judge:"Will Ward", county:"Williamson"}
-].map(j => ({
-jurisdiction: `${j.county} County, Unknown`,
-judge: j.judge,
-avgTimeToDate:"Unknown",
-avgFutureOffset:"Unknown",
-difficulty:"Easy",
-approvalRate:"100%",
-totalCases:1,
-denialNotes:"",
-ipaInfo:""
-}))
-};
+const entries = [
+  /*
+  {
+    judge: "Abigail Howard",
+    jurisdiction: "Hamlin County, SD",
+    approvals: 1,
+    denials: 0,
+    notes: "Approved first filing"
+  }
+  */
+];
 
-function populateFilters(){
-const s=document.getElementById("stateFilter");
-const c=document.getElementById("countyFilter");
-const j=document.getElementById("judgeFilter");
+/* =====================================================
+   🔹 CORE LOGIC
+   ===================================================== */
 
-s.innerHTML='<option value="all">All States</option>';
-c.innerHTML='<option value="all">All Counties</option>';
-j.innerHTML='<option value="all">All Judges</option>';
-
-Object.entries(US_STATES).forEach(([a,n])=>{
-s.innerHTML+=`<option value="${a}">${n} (${a})</option>`;
-});
-
-[...new Set(data.courtGuide.map(e=>e.jurisdiction.split(" County")[0]))]
-.sort().forEach(x=>c.innerHTML+=`<option value="${x}">${x} County</option>`);
-
-[...new Set(data.courtGuide.map(e=>e.judge))].sort()
-.forEach(x=>j.innerHTML+=`<option value="${x}">${x}</option>`);
+function getStateFromJurisdiction(j) {
+  if (!j) return "UNKNOWN";
+  const m = j.match(/,\s*([A-Z]{2})\b/);
+  return m ? m[1] : "UNKNOWN";
 }
 
-function displayCourtGuide(){
-let f=data.courtGuide;
-const s=stateFilter.value,c=countyFilter.value,j=judgeFilter.value;
-if(s!=="all") f=f.filter(e=>e.jurisdiction.includes(s));
-if(c!=="all") f=f.filter(e=>e.jurisdiction.startsWith(c));
-if(j!=="all") f=f.filter(e=>e.judge===j);
+function buildStateDashboard(entries) {
+  const states = {};
 
-courtBody.innerHTML="";
-let t=0,a=0;
+  entries.forEach(e => {
+    const state = getStateFromJurisdiction(e.jurisdiction);
+    if (!states[state]) {
+      states[state] = { state, approvals: 0, denials: 0, entries: [] };
+    }
+    states[state].approvals += e.approvals || 0;
+    states[state].denials += e.denials || 0;
+    states[state].entries.push(e);
+  });
 
-f.forEach(e=>{
-courtBody.innerHTML+=`
-<tr class="easy">
-<td>${e.jurisdiction}</td>
-<td>${e.judge}</td>
-<td>${e.avgTimeToDate}</td>
-<td>${e.avgFutureOffset}</td>
-<td>${e.difficulty}</td>
-<td class="high">${e.approvalRate}</td>
-<td>${e.totalCases}</td>
-<td>${e.denialNotes}</td>
-</tr>`;
-t+=e.totalCases; a+=e.totalCases;
-});
-
-summary.textContent=`Showing ${f.length} entries — Overall approval rate: ${t?100:0}%`;
+  return states;
 }
 
-let sortDir={};
-function sortTable(n){
-const r=[...courtTable.tBodies[0].rows];
-const d=sortDir[n]=sortDir[n]==="asc"?"desc":"asc";
-r.sort((a,b)=>d==="asc"?a.cells[n].textContent.localeCompare(b.cells[n].textContent)
-:b.cells[n].textContent.localeCompare(a.cells[n].textContent));
-r.forEach(x=>courtTable.tBodies[0].appendChild(x));
+function renderDashboard() {
+  const dashboard = document.getElementById("dashboard");
+  const data = buildStateDashboard(entries);
+
+  Object.values(data).forEach(s => {
+    const total = s.approvals + s.denials;
+    const rate = total ? Math.round((s.approvals / total) * 100) : 0;
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.onclick = () => openModal(s);
+
+    card.innerHTML = `
+      <h2>${s.state}</h2>
+      <div class="rate">${rate}%</div>
+      <div class="meta">
+        ${s.entries.length} Judges<br>
+        ${s.approvals} Approvals • ${s.denials} Denials
+      </div>
+    `;
+
+    dashboard.appendChild(card);
+  });
 }
 
-populateFilters();
-displayCourtGuide();
+function openModal(stateData) {
+  document.getElementById("modalTitle").textContent =
+    `${stateData.state} — Judge Details`;
+
+  const tbody = document.getElementById("modalTable");
+  tbody.innerHTML = "";
+
+  stateData.entries.forEach(e => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${e.judge || ""}</td>
+      <td>${e.jurisdiction || ""}</td>
+      <td class="approve">${e.approvals || 0}</td>
+      <td class="deny">${e.denials || 0}</td>
+      <td>${e.notes || ""}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById("modal").style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("modal").style.display = "none";
+}
+
+renderDashboard();
 </script>
 
 </body>
