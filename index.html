@@ -1,4 +1,5 @@
 <script>
+// --- Existing data setup ---
 const US_STATES = {
 AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",
 CO:"Colorado",CT:"Connecticut",DE:"Delaware",FL:"Florida",GA:"Georgia",
@@ -12,28 +13,12 @@ SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",
 VA:"Virginia",WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming"
 };
 
-// Map your counties to state codes
 const countyToState = {
-  "Duval":"FL",
-  "Berks":"PA",
-  "Collin":"TX",
-  "Wise":"TX",
-  "Cook":"IL",
-  "Greene":"TX",
-  "Walton":"GA",
-  "Smith":"TX",
-  "Allegheny":"PA",
-  "Tom Green":"TX",
-  "Beaver":"PA",
-  "New York":"NY",
-  "Monroe":"NY",
-  "Harrison":"WV",
-  "Cobb":"GA",
-  "Pickens":"SC",
-  "Kaufman":"TX",
-  "Passaic":"NJ",
-  "Dallas":"TX",
-  "Williamson":"TX"
+  "Unknown":"Unknown", "Duval":"FL", "Berks":"PA", "Collin":"TX", "Wise":"TX",
+  "Cook":"IL", "Greene":"TX", "Walton":"GA", "Smith":"TX", "Allegheny":"PA",
+  "Tom Green":"TX", "Beaver":"PA", "New York":"NY", "Monroe":"NY",
+  "Harrison":"WV", "Cobb":"GA", "Pickens":"SC", "Kaufman":"TX",
+  "Passaic":"NJ", "Dallas":"TX", "Williamson":"TX"
 };
 
 let data = {
@@ -76,64 +61,123 @@ let data = {
   })
 };
 
-// The rest of your functions stay the same
+// --- Populate Filters ---
 function populateFilters(){
-const s=document.getElementById("stateFilter");
-const c=document.getElementById("countyFilter");
-const j=document.getElementById("judgeFilter");
+  const s=document.getElementById("stateFilter");
+  const c=document.getElementById("countyFilter");
+  const j=document.getElementById("judgeFilter");
 
-s.innerHTML='<option value="all">All States</option>';
-c.innerHTML='<option value="all">All Counties</option>';
-j.innerHTML='<option value="all">All Judges</option>';
+  s.innerHTML='<option value="all">All States</option>';
+  c.innerHTML='<option value="all">All Counties</option>';
+  j.innerHTML='<option value="all">All Judges</option>';
 
-Object.entries(US_STATES).forEach(([a,n])=>{
-  s.innerHTML+=`<option value="${a}">${n} (${a})</option>`;
-});
+  Object.entries(US_STATES).forEach(([a,n])=>{
+    s.innerHTML+=`<option value="${a}">${n} (${a})</option>`;
+  });
 
-[...new Set(data.courtGuide.map(e=>e.jurisdiction.split(" County")[0]))]
-.sort().forEach(x=>c.innerHTML+=`<option value="${x}">${x} County</option>`);
+  [...new Set(data.courtGuide.map(e=>e.jurisdiction.split(" County")[0]))]
+  .sort().forEach(x=>c.innerHTML+=`<option value="${x}">${x} County</option>`);
 
-[...new Set(data.courtGuide.map(e=>e.judge))].sort()
-.forEach(x=>j.innerHTML+=`<option value="${x}">${x}</option>`);
+  [...new Set(data.courtGuide.map(e=>e.judge))].sort()
+  .forEach(x=>j.innerHTML+=`<option value="${x}">${x}</option>`);
 }
 
+// --- Display Table ---
 function displayCourtGuide(){
-let f=data.courtGuide;
-const s=stateFilter.value,c=countyFilter.value,j=judgeFilter.value;
-if(s!=="all") f=f.filter(e=>e.jurisdiction.includes(s));
-if(c!=="all") f=f.filter(e=>e.jurisdiction.startsWith(c));
-if(j!=="all") f=f.filter(e=>e.judge===j);
+  let f=data.courtGuide;
+  const s=stateFilter.value,c=countyFilter.value,j=judgeFilter.value;
+  if(s!=="all") f=f.filter(e=>e.jurisdiction.includes(s));
+  if(c!=="all") f=f.filter(e=>e.jurisdiction.startsWith(c));
+  if(j!=="all") f=f.filter(e=>e.judge===j);
 
-courtBody.innerHTML="";
-let t=0,a=0;
+  courtBody.innerHTML="";
+  let t=0,a=0;
 
-f.forEach(e=>{
-courtBody.innerHTML+=`
-<tr class="easy">
-<td>${e.jurisdiction}</td>
-<td>${e.judge}</td>
-<td>${e.avgTimeToDate}</td>
-<td>${e.avgFutureOffset}</td>
-<td>${e.difficulty}</td>
-<td class="high">${e.approvalRate}</td>
-<td>${e.totalCases}</td>
-<td>${e.denialNotes}</td>
-</tr>`;
-t+=e.totalCases; a+=e.totalCases;
-});
+  f.forEach((e,index)=>{
+    courtBody.innerHTML+=`
+    <tr class="easy">
+      <td>${e.jurisdiction}</td>
+      <td>${e.judge}</td>
+      <td>${e.avgTimeToDate}</td>
+      <td>${e.avgFutureOffset}</td>
+      <td>${e.difficulty}</td>
+      <td class="high">${e.approvalRate}</td>
+      <td>${e.totalCases}</td>
+      <td>${e.denialNotes}</td>
+      <td>
+        <button onclick="editEntry(${index})">Edit</button>
+        <button onclick="deleteEntry(${index})">Delete</button>
+      </td>
+    </tr>`;
+    t+=e.totalCases; a+=e.totalCases;
+  });
 
-summary.textContent=`Showing ${f.length} entries — Overall approval rate: ${t?100:0}%`;
+  summary.textContent=`Showing ${f.length} entries — Overall approval rate: ${t?100:0}%`;
 }
 
+// --- Edit / Delete / Add ---
+function editEntry(i){
+  const e = data.courtGuide[i];
+  const newJudge = prompt("Judge name:", e.judge);
+  if(newJudge!==null) e.judge = newJudge;
+
+  const newCounty = prompt("County name:", e.jurisdiction.split(" County")[0]);
+  if(newCounty!==null){
+    const stateCode = countyToState[newCounty] || "Unknown";
+    e.jurisdiction = `${newCounty} County, ${stateCode}`;
+  }
+
+  const newDifficulty = prompt("Difficulty (Easy/Medium/Hard):", e.difficulty);
+  if(newDifficulty!==null) e.difficulty = newDifficulty;
+
+  displayCourtGuide();
+}
+
+function deleteEntry(i){
+  if(confirm("Delete this entry?")){
+    data.courtGuide.splice(i,1);
+    displayCourtGuide();
+  }
+}
+
+function addEntry(){
+  const judge = prompt("Judge name:");
+  if(!judge) return;
+  const county = prompt("County name:");
+  if(!county) return;
+  const stateCode = countyToState[county] || "Unknown";
+  const difficulty = prompt("Difficulty (Easy/Medium/Hard):","Easy") || "Easy";
+
+  data.courtGuide.push({
+    judge,
+    jurisdiction: `${county} County, ${stateCode}`,
+    avgTimeToDate:"Unknown",
+    avgFutureOffset:"Unknown",
+    difficulty,
+    approvalRate:"100%",
+    totalCases:1,
+    denialNotes:"",
+    ipaInfo:""
+  });
+
+  populateFilters();
+  displayCourtGuide();
+}
+
+// --- Sorting ---
 let sortDir={};
 function sortTable(n){
-const r=[...courtTable.tBodies[0].rows];
-const d=sortDir[n]=sortDir[n]==="asc"?"desc":"asc";
-r.sort((a,b)=>d==="asc"?a.cells[n].textContent.localeCompare(b.cells[n].textContent)
-:b.cells[n].textContent.localeCompare(a.cells[n].textContent));
-r.forEach(x=>courtTable.tBodies[0].appendChild(x));
+  const r=[...courtTable.tBodies[0].rows];
+  const d=sortDir[n]=sortDir[n]==="asc"?"desc":"asc";
+  r.sort((a,b)=>d==="asc"?a.cells[n].textContent.localeCompare(b.cells[n].textContent)
+    :b.cells[n].textContent.localeCompare(a.cells[n].textContent));
+  r.forEach(x=>courtTable.tBodies[0].appendChild(x));
 }
 
+// --- Init ---
 populateFilters();
 displayCourtGuide();
 </script>
+
+<!-- Add "Add Entry" Button -->
+<button onclick="addEntry()">Add New Entry</button>
