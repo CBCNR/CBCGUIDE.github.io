@@ -1,183 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CBC Settlement Funding – Court Guide</title>
+
+<style>
+body { font-family: Arial, sans-serif; background:#f5f7fa; margin:20px; }
+h1,h2 { color:#1a5fb4; }
+select, button { padding:8px; margin:6px 0; font-size:14px; }
+button { background:#1a5fb4; color:#fff; border:none; border-radius:4px; cursor:pointer; }
+button:hover { background:#0d47a1; }
+table { width:100%; border-collapse:collapse; margin-top:15px; background:#fff; }
+th,td { border:1px solid #ccc; padding:8px; text-align:left; }
+th { background:#1a5fb4; color:#fff; cursor:pointer; }
+.easy { background:#d4edda; }
+.filters { display:flex; gap:15px; flex-wrap:wrap; background:#e3f2fd; padding:15px; border-radius:6px; }
+#summary { font-weight:bold; margin-top:10px; color:#333; }
+</style>
+</head>
+
+<body>
+
+<h1>CBC Settlement Funding – Court Guide</h1>
+
+<h2>Filters</h2>
+<div class="filters">
+  <select id="stateFilter"></select>
+  <select id="countyFilter"></select>
+  <select id="judgeFilter"></select>
+</div>
+
+<div id="summary"></div>
+
+<table id="courtTable">
+<thead>
+<tr>
+  <th onclick="sortTable(0)">Jurisdiction</th>
+  <th onclick="sortTable(1)">Judge</th>
+  <th onclick="sortTable(2)">Avg Time</th>
+  <th onclick="sortTable(3)">Future Offset</th>
+  <th onclick="sortTable(4)">Difficulty</th>
+  <th onclick="sortTable(5)">Approval</th>
+  <th onclick="sortTable(6)">Cases</th>
+  <th onclick="sortTable(7)">Notes</th>
+</tr>
+</thead>
+<tbody id="courtBody"></tbody>
+</table>
+
 <script>
-// --- Existing data setup ---
-const US_STATES = {
-AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",
-CO:"Colorado",CT:"Connecticut",DE:"Delaware",FL:"Florida",GA:"Georgia",
-HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",
-KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",MA:"Massachusetts",
-MI:"Michigan",MN:"Minnesota",MS:"Mississippi",MO:"Missouri",MT:"Montana",
-NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",NM:"New Mexico",
-NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",
-OR:"Oregon",PA:"Pennsylvania",RI:"Rhode Island",SC:"South Carolina",
-SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",
-VA:"Virginia",WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming"
-};
+/* ---------- DATA ---------- */
 
-const countyToState = {
-  "Unknown":"Unknown", "Duval":"FL", "Berks":"PA", "Collin":"TX", "Wise":"TX",
-  "Cook":"IL", "Greene":"TX", "Walton":"GA", "Smith":"TX", "Allegheny":"PA",
-  "Tom Green":"TX", "Beaver":"PA", "New York":"NY", "Monroe":"NY",
-  "Harrison":"WV", "Cobb":"GA", "Pickens":"SC", "Kaufman":"TX",
-  "Passaic":"NJ", "Dallas":"TX", "Williamson":"TX"
-};
+const courtGuide = [
+  { judge:"Bahir Kamil", county:"Unknown", state:"Unknown" },
+  { judge:"Baldemar Garza", county:"Duval", state:"FL" },
+  { judge:"Benjamin Nevius", county:"Berks", state:"PA" },
+  { judge:"Benjamin N. Smith", county:"Collin", state:"TX" },
+  { judge:"Brock Smith", county:"Wise", state:"TX" },
+  { judge:"Christopher O'Donnell", county:"Cook", state:"IL" },
+  { judge:"Daniel G. Garrett", county:"Greene", state:"TX" },
+  { judge:"David L. Brantley", county:"Walton", state:"GA" },
+  { judge:"Debby Gunter", county:"Smith", state:"TX" },
+  { judge:"Elizabeth W. McCune", county:"Allegheny", state:"PA" },
+  { judge:"Gonzalo Rios", county:"Tom Green", state:"TX" },
+  { judge:"James L. Ross", county:"Beaver", state:"PA" },
+  { judge:"Jennifer Schecter", county:"New York", state:"NY" },
+  { judge:"John Gallagher", county:"Monroe", state:"NY" },
+  { judge:"Joseph Shaffer", county:"Harrison", state:"WV" },
+  { judge:"Kellie Hill", county:"Cobb", state:"GA" },
+  { judge:"Nathan Taylor", county:"Greene", state:"TX" },
+  { judge:"Patrick Fant III", county:"Pickens", state:"SC" },
+  { judge:"Shelton T.W. Gibbs", county:"Kaufman", state:"TX" },
+  { judge:"Thomas J. LaConte", county:"Passaic", state:"NJ" },
+  { judge:"Tonya Parker", county:"Dallas", state:"TX" },
+  { judge:"Will Ward", county:"Williamson", state:"TX" }
+].map(e => ({
+  jurisdiction: `${e.county} County, ${e.state}`,
+  judge: e.judge,
+  avgTime: "Unknown",
+  futureOffset: "Unknown",
+  difficulty: "Easy",
+  approval: "100%",
+  cases: 1,
+  notes: ""
+}));
 
-let data = {
-  courtGuide: [
-    {judge:"Bahir Kamil", county:"Unknown"},
-    {judge:"Baldemar Garza", county:"Duval"},
-    {judge:"Benjamin Nevius", county:"Berks"},
-    {judge:"Benjamin N. Smith", county:"Collin"},
-    {judge:"Brock Smith", county:"Wise"},
-    {judge:"Christopher O'Donnell", county:"Cook"},
-    {judge:"Daniel G. Garrett", county:"Greene"},
-    {judge:"David L. Brantley", county:"Walton"},
-    {judge:"Debby Gunter", county:"Smith"},
-    {judge:"Elizabeth W. McCune", county:"Allegheny"},
-    {judge:"Gonzalo Rios", county:"Tom Green"},
-    {judge:"James L. Ross", county:"Beaver"},
-    {judge:"Jennifer Schecter", county:"New York"},
-    {judge:"John Gallagher", county:"Monroe"},
-    {judge:"Joseph Shaffer", county:"Harrison"},
-    {judge:"Kellie Hill", county:"Cobb"},
-    {judge:"Nathan Taylor", county:"Greene"},
-    {judge:"Patrick Fant III", county:"Pickens"},
-    {judge:"Shelton T.W. Gibbs", county:"Kaufman"},
-    {judge:"Thomas J. LaConte", county:"Passaic"},
-    {judge:"Tonya Parker", county:"Dallas"},
-    {judge:"Will Ward", county:"Williamson"}
-  ].map(j => {
-    const stateCode = countyToState[j.county] || "Unknown";
-    return {
-      jurisdiction: `${j.county} County, ${stateCode}`,
-      judge: j.judge,
-      avgTimeToDate:"Unknown",
-      avgFutureOffset:"Unknown",
-      difficulty:"Easy",
-      approvalRate:"100%",
-      totalCases:1,
-      denialNotes:"",
-      ipaInfo:""
-    };
-  })
-};
+/* ---------- FILTERS ---------- */
 
-// --- Populate Filters ---
-function populateFilters(){
-  const s=document.getElementById("stateFilter");
-  const c=document.getElementById("countyFilter");
-  const j=document.getElementById("judgeFilter");
+const stateFilter = document.getElementById("stateFilter");
+const countyFilter = document.getElementById("countyFilter");
+const judgeFilter = document.getElementById("judgeFilter");
+const courtBody = document.getElementById("courtBody");
+const summary = document.getElementById("summary");
 
-  s.innerHTML='<option value="all">All States</option>';
-  c.innerHTML='<option value="all">All Counties</option>';
-  j.innerHTML='<option value="all">All Judges</option>';
+function populateFilters() {
+  stateFilter.innerHTML = '<option value="all">All States</option>';
+  countyFilter.innerHTML = '<option value="all">All Counties</option>';
+  judgeFilter.innerHTML = '<option value="all">All Judges</option>';
 
-  Object.entries(US_STATES).forEach(([a,n])=>{
-    s.innerHTML+=`<option value="${a}">${n} (${a})</option>`;
+  [...new Set(courtGuide.map(e => e.jurisdiction.split(", ")[1]))]
+    .sort().forEach(s => stateFilter.innerHTML += `<option value="${s}">${s}</option>`);
+
+  [...new Set(courtGuide.map(e => e.jurisdiction.split(" County")[0]))]
+    .sort().forEach(c => countyFilter.innerHTML += `<option value="${c}">${c} County</option>`);
+
+  [...new Set(courtGuide.map(e => e.judge))]
+    .sort().forEach(j => judgeFilter.innerHTML += `<option value="${j}">${j}</option>`);
+}
+
+/* ---------- DISPLAY ---------- */
+
+function displayCourtGuide() {
+  let rows = courtGuide;
+
+  if (stateFilter.value !== "all")
+    rows = rows.filter(e => e.jurisdiction.endsWith(stateFilter.value));
+
+  if (countyFilter.value !== "all")
+    rows = rows.filter(e => e.jurisdiction.startsWith(countyFilter.value));
+
+  if (judgeFilter.value !== "all")
+    rows = rows.filter(e => e.judge === judgeFilter.value);
+
+  courtBody.innerHTML = "";
+
+  rows.forEach(e => {
+    courtBody.innerHTML += `
+      <tr class="easy">
+        <td>${e.jurisdiction}</td>
+        <td>${e.judge}</td>
+        <td>${e.avgTime}</td>
+        <td>${e.futureOffset}</td>
+        <td>${e.difficulty}</td>
+        <td>${e.approval}</td>
+        <td>${e.cases}</td>
+        <td>${e.notes}</td>
+      </tr>
+    `;
   });
 
-  [...new Set(data.courtGuide.map(e=>e.jurisdiction.split(" County")[0]))]
-  .sort().forEach(x=>c.innerHTML+=`<option value="${x}">${x} County</option>`);
-
-  [...new Set(data.courtGuide.map(e=>e.judge))].sort()
-  .forEach(x=>j.innerHTML+=`<option value="${x}">${x}</option>`);
+  summary.textContent = `Showing ${rows.length} judges`;
 }
 
-// --- Display Table ---
-function displayCourtGuide(){
-  let f=data.courtGuide;
-  const s=stateFilter.value,c=countyFilter.value,j=judgeFilter.value;
-  if(s!=="all") f=f.filter(e=>e.jurisdiction.includes(s));
-  if(c!=="all") f=f.filter(e=>e.jurisdiction.startsWith(c));
-  if(j!=="all") f=f.filter(e=>e.judge===j);
+/* ---------- SORT ---------- */
 
-  courtBody.innerHTML="";
-  let t=0,a=0;
+let sortDir = {};
+function sortTable(col) {
+  const dir = sortDir[col] = sortDir[col] === "asc" ? "desc" : "asc";
+  const rows = [...courtBody.rows];
 
-  f.forEach((e,index)=>{
-    courtBody.innerHTML+=`
-    <tr class="easy">
-      <td>${e.jurisdiction}</td>
-      <td>${e.judge}</td>
-      <td>${e.avgTimeToDate}</td>
-      <td>${e.avgFutureOffset}</td>
-      <td>${e.difficulty}</td>
-      <td class="high">${e.approvalRate}</td>
-      <td>${e.totalCases}</td>
-      <td>${e.denialNotes}</td>
-      <td>
-        <button onclick="editEntry(${index})">Edit</button>
-        <button onclick="deleteEntry(${index})">Delete</button>
-      </td>
-    </tr>`;
-    t+=e.totalCases; a+=e.totalCases;
-  });
+  rows.sort((a,b) =>
+    dir === "asc"
+      ? a.cells[col].textContent.localeCompare(b.cells[col].textContent)
+      : b.cells[col].textContent.localeCompare(a.cells[col].textContent)
+  );
 
-  summary.textContent=`Showing ${f.length} entries — Overall approval rate: ${t?100:0}%`;
+  rows.forEach(r => courtBody.appendChild(r));
 }
 
-// --- Edit / Delete / Add ---
-function editEntry(i){
-  const e = data.courtGuide[i];
-  const newJudge = prompt("Judge name:", e.judge);
-  if(newJudge!==null) e.judge = newJudge;
+/* ---------- INIT ---------- */
 
-  const newCounty = prompt("County name:", e.jurisdiction.split(" County")[0]);
-  if(newCounty!==null){
-    const stateCode = countyToState[newCounty] || "Unknown";
-    e.jurisdiction = `${newCounty} County, ${stateCode}`;
-  }
+[stateFilter, countyFilter, judgeFilter].forEach(f =>
+  f.addEventListener("change", displayCourtGuide)
+);
 
-  const newDifficulty = prompt("Difficulty (Easy/Medium/Hard):", e.difficulty);
-  if(newDifficulty!==null) e.difficulty = newDifficulty;
-
-  displayCourtGuide();
-}
-
-function deleteEntry(i){
-  if(confirm("Delete this entry?")){
-    data.courtGuide.splice(i,1);
-    displayCourtGuide();
-  }
-}
-
-function addEntry(){
-  const judge = prompt("Judge name:");
-  if(!judge) return;
-  const county = prompt("County name:");
-  if(!county) return;
-  const stateCode = countyToState[county] || "Unknown";
-  const difficulty = prompt("Difficulty (Easy/Medium/Hard):","Easy") || "Easy";
-
-  data.courtGuide.push({
-    judge,
-    jurisdiction: `${county} County, ${stateCode}`,
-    avgTimeToDate:"Unknown",
-    avgFutureOffset:"Unknown",
-    difficulty,
-    approvalRate:"100%",
-    totalCases:1,
-    denialNotes:"",
-    ipaInfo:""
-  });
-
-  populateFilters();
-  displayCourtGuide();
-}
-
-// --- Sorting ---
-let sortDir={};
-function sortTable(n){
-  const r=[...courtTable.tBodies[0].rows];
-  const d=sortDir[n]=sortDir[n]==="asc"?"desc":"asc";
-  r.sort((a,b)=>d==="asc"?a.cells[n].textContent.localeCompare(b.cells[n].textContent)
-    :b.cells[n].textContent.localeCompare(a.cells[n].textContent));
-  r.forEach(x=>courtTable.tBodies[0].appendChild(x));
-}
-
-// --- Init ---
 populateFilters();
 displayCourtGuide();
 </script>
 
-<!-- Add "Add Entry" Button -->
-<button onclick="addEntry()">Add New Entry</button>
+</body>
+</html>
