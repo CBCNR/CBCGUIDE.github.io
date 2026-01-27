@@ -6,171 +6,287 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
-    :root {
-      --bg: #f5f7fb;
+    :root{
+      --bg: #eef3fb;
       --card: #ffffff;
-      --primary: #1f3a5f;
-      --accent: #3b82f6;
-      --text: #1f2937;
+      --primary-900: #0f2740;
+      --primary: #153a61;
+      --secondary: #4f6d8c;
+      --accent: #2563eb;
       --muted: #6b7280;
-      --border: #e5e7eb;
+      --border: #e6eefb;
       --success: #16a34a;
       --danger: #dc2626;
+      --glass: rgba(255,255,255,0.6);
+      --radius: 14px;
     }
 
-    * {
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    /* Reset & base */
+    *{ box-sizing: border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, var(--bg) 0%, #f9fbff 100%);
+      color: #0f1724;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.35;
     }
 
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
+    /* Header */
+    header{
+      background: linear-gradient(90deg, rgba(37,99,235,0.96), rgba(21,58,97,0.96));
+      color: #fff;
+      padding: 28px 36px;
+      box-shadow: 0 6px 30px rgba(16,24,40,0.12);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
-
-    header {
-      background: var(--primary);
-      color: white;
-      padding: 24px 32px;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 24px;
-    }
-
-    header p {
-      margin-top: 6px;
-      opacity: 0.85;
-    }
-
-    main {
-      padding: 32px;
+    .header-inner{
       max-width: 1300px;
-      margin: auto;
+      margin: 0 auto;
+      display:flex;
+      gap:20px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .brand{
+      display:flex;
+      gap:16px;
+      align-items:center;
+    }
+    .logo{
+      width:52px;
+      height:52px;
+      border-radius:12px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow: inset 0 -4px 12px rgba(0,0,0,0.06);
+      font-weight:700;
+      color:#fff;
+      font-size:18px;
+    }
+    header h1{
+      margin:0;
+      font-size:20px;
+      letter-spacing: -0.2px;
+    }
+    header p{
+      margin:0;
+      font-size:13px;
+      opacity: .9;
+      color: rgba(255,255,255,0.92);
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 20px;
+    /* Main layout */
+    main{
+      max-width: 1300px;
+      margin: 26px auto;
+      padding: 0 20px 60px;
     }
 
-    .card {
-      background: var(--card);
-      border-radius: 14px;
-      padding: 20px;
+    .controls{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      margin-bottom:18px;
+      flex-wrap:wrap;
+    }
+
+    .search {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      background:var(--card);
+      border-radius: 12px;
+      padding:8px 12px;
       border: 1px solid var(--border);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-      cursor: pointer;
-      transition: transform .15s ease, box-shadow .15s ease;
+      box-shadow: 0 4px 18px rgba(16,24,40,0.04);
+      min-width: 260px;
+      flex:1;
+    }
+    .search input{
+      border:0;
+      outline:none;
+      font-size:14px;
+      width:100%;
+      background:transparent;
+      color:var(--primary-900);
+    }
+    .select, .btn {
+      background: var(--card);
+      border-radius: 12px;
+      padding:8px 12px;
+      border: 1px solid var(--border);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:14px;
+      cursor:pointer;
+      color:var(--primary-900);
+      box-shadow: 0 4px 18px rgba(16,24,40,0.03);
+    }
+    .btn { user-select:none; }
+
+    /* grid */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap:18px;
     }
 
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    }
-
-    .card h2 {
-      margin: 0;
-      font-size: 18px;
-      color: var(--primary);
-    }
-
-    .rate {
-      font-size: 36px;
-      font-weight: 700;
-      margin: 14px 0;
-      color: var(--accent);
-    }
-
-    .meta {
-      font-size: 14px;
-      color: var(--muted);
-    }
-
-    /* MODAL */
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-
-    .modal-content {
-      background: white;
-      width: 95%;
-      max-width: 1100px;
-      max-height: 85vh;
-      border-radius: 16px;
+    .card{
+      background:var(--card);
+      border-radius: var(--radius);
+      padding:16px;
+      border:1px solid var(--border);
+      box-shadow: 0 8px 30px rgba(16,24,40,0.04);
+      transition: transform .18s ease, box-shadow .18s ease;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      position:relative;
+    }
+    .card:hover{
+      transform: translateY(-6px);
+      box-shadow: 0 18px 45px rgba(16,24,40,0.08);
     }
 
-    .modal-header {
-      padding: 20px 24px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .card-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .state-code{
+      font-weight:800;
+      font-size:20px;
+      color:var(--primary);
+      padding:8px 12px;
+      border-radius:10px;
+      background: linear-gradient(90deg, rgba(37,99,235,0.06), rgba(21,58,97,0.02));
+      border: 1px solid rgba(37,99,235,0.06);
     }
 
-    .modal-header h3 {
-      margin: 0;
-      color: var(--primary);
+    .rate{
+      font-size:28px;
+      font-weight:800;
+      color: var(--accent);
+      letter-spacing:-0.6px;
     }
 
-    .close {
-      font-size: 22px;
-      cursor: pointer;
-      color: var(--muted);
+    .meta{
+      margin-top:12px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .badge{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      color:var(--accent);
+      background: rgba(59,130,246,0.08);
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
+    .stat{
+      color:var(--muted);
+      font-size:13px;
+      margin-top:10px;
+    }
+    .stat strong{ color: var(--primary-900); }
+
+    /* progress bar */
+    .progress{
+      height:12px;
+      background: linear-gradient(90deg, rgba(7,15,30,0.03), rgba(7,15,30,0.02));
+      border-radius:999px;
+      margin-top:12px;
+      overflow:hidden;
+      border:1px solid rgba(16,24,40,0.03);
+    }
+    .progress > i{
+      display:block;
+      height:100%;
+      background: linear-gradient(90deg, #60a5fa, #2563eb);
+      width:0%;
+      transition: width 800ms cubic-bezier(.2,.9,.3,1);
     }
 
-    thead {
-      background: #f1f5f9;
-      position: sticky;
-      top: 0;
-      z-index: 1;
+    /* details toggle */
+    .expand-btn{
+      margin-top:12px;
+      background:transparent;
+      border:0;
+      color:var(--primary-900);
+      font-weight:600;
+      cursor:pointer;
+      padding:8px 6px;
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .details{
+      margin-top:10px;
+      border-top:1px dashed rgba(16,24,40,0.04);
+      padding-top:10px;
+      display:none;
+      max-height:0;
+      overflow:auto;
+      transition: max-height .32s ease;
+    }
+    .details.open{
+      display:block;
+      max-height:480px;
+    }
+    .entry{
+      padding:8px 6px;
+      border-radius:8px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      background: linear-gradient(180deg, rgba(8,16,31,0.01), transparent);
+      margin-bottom:8px;
+      font-size:13px;
+    }
+    .entry .judge{
+      font-weight:700;
+      color:var(--primary-900);
+    }
+    .entry .meta{
+      text-align:right;
+      color:var(--muted);
+      font-size:12px;
     }
 
-    th, td {
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border);
-      text-align: left;
-      vertical-align: top;
+    /* Empty state */
+    .empty{
+      padding:36px;
+      text-align:center;
+      border-radius:12px;
+      color:var(--muted);
+      background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.5));
+      border:1px dashed rgba(16,24,40,0.03);
     }
 
-    th {
-      font-weight: 600;
-      color: var(--primary);
+    footer{
+      max-width:1300px;
+      margin:36px auto 120px;
+      padding:18px 20px;
+      color:var(--muted);
+      font-size:13px;
+      text-align:center;
     }
 
-    .approve {
-      color: var(--success);
-      font-weight: 600;
-    }
-
-    .deny {
-      color: var(--danger);
-      font-weight: 600;
-    }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      color: var(--muted);
-      font-size: 13px;
+    /* responsive tweaks */
+    @media (max-width:640px){
+      .header-inner{ flex-direction:column; align-items:flex-start; gap:12px; }
+      .controls{ flex-direction:column; align-items:stretch; }
+      .search{ min-width: auto; }
     }
   </style>
 </head>
@@ -178,49 +294,61 @@
 <body>
 
 <header>
-  <h1>Judicial Approval Dashboard</h1>
-  <p>Click a state to view judge-level details</p>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">JD</div>
+      <div>
+        <h1>Judicial Approval Dashboard</h1>
+        <p>All judges • all jurisdictions • real approval data</p>
+      </div>
+    </div>
+
+    <div style="opacity:.95">
+      <div style="font-weight:700; font-size:14px">Full judicial dataset</div>
+      <div style="font-size:12px; opacity:.9">No records omitted • Audit-ready</div>
+    </div>
+  </div>
 </header>
 
 <main>
-  <div id="dashboard" class="grid"></div>
+  <div class="controls" role="region" aria-label="Controls">
+    <label class="search" aria-hidden="false">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 21l-4.35-4.35" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="11" r="6" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <input id="search" placeholder="Search state, judge, or jurisdiction (e.g. 'CA' or 'Smith')" aria-label="Search dashboard" />
+    </label>
+
+    <div class="select" role="group" aria-label="Sort options">
+      <label for="sort" style="font-weight:600; font-size:13px; color:var(--muted);">Sort</label>
+      <select id="sort" style="border:0; background:transparent; font-weight:700; color:var(--primary-900); outline:none;">
+        <option value="rate">By Approval %</option>
+        <option value="judges">By Number of Judges</option>
+        <option value="approvals">By Approvals</option>
+      </select>
+    </div>
+
+    <button id="reset" class="btn" title="Reset filters" aria-label="Reset filters">Reset</button>
+  </div>
+
+  <div id="dashboard" class="grid" aria-live="polite" aria-atomic="true"></div>
+
+  <div id="empty" class="empty" style="display:none; margin-top:12px;">
+    No matching records. Paste your dataset above or change filters.
+  </div>
 </main>
 
 <footer>
-  All judges • all jurisdictions • no records omitted
+  Built from full judicial dataset • No records omitted
 </footer>
 
-<!-- MODAL -->
-<div id="modal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3 id="modalTitle"></h3>
-      <span class="close" onclick="closeModal()">×</span>
-    </div>
-    <div style="overflow:auto">
-      <table>
-        <thead>
-          <tr>
-            <th>Judge</th>
-            <th>Jurisdiction</th>
-            <th>Approvals</th>
-            <th>Denials</th>
-            <th>Notes</th>
-          </tr>
-        </thead>
-        <tbody id="modalTable"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
 <script>
-/* =====================================================
+/* =========================================================
    🔹 PASTE YOUR FULL DATASET HERE
-   ===================================================== */
+   ========================================================= */
 
 const entries = [
   /*
+  Example format ONLY — replace with your full list
+
   {
     judge: "Abigail Howard",
     jurisdiction: "Hamlin County, SD",
@@ -231,84 +359,204 @@ const entries = [
   */
 ];
 
-/* =====================================================
-   🔹 CORE LOGIC
-   ===================================================== */
+/* =========================================================
+   🔹 CORE LOGIC — NOTHING IS DROPPED
+   ========================================================= */
 
-function getStateFromJurisdiction(j) {
-  if (!j) return "UNKNOWN";
-  const m = j.match(/,\s*([A-Z]{2})\b/);
-  return m ? m[1] : "UNKNOWN";
+function getStateFromJurisdiction(jurisdiction) {
+  if (!jurisdiction) return "UNKNOWN";
+  const match = jurisdiction.match(/,\s*([A-Z]{2})\b/);
+  return match ? match[1] : "UNKNOWN";
 }
 
 function buildStateDashboard(entries) {
   const states = {};
 
-  entries.forEach(e => {
-    const state = getStateFromJurisdiction(e.jurisdiction);
+  entries.forEach(entry => {
+    const state = getStateFromJurisdiction(entry.jurisdiction);
+
     if (!states[state]) {
-      states[state] = { state, approvals: 0, denials: 0, entries: [] };
+      states[state] = {
+        state,
+        judges: 0,
+        approvals: 0,
+        denials: 0,
+        entries: []
+      };
     }
-    states[state].approvals += e.approvals || 0;
-    states[state].denials += e.denials || 0;
-    states[state].entries.push(e);
+
+    states[state].judges += 1;
+    states[state].approvals += entry.approvals || 0;
+    states[state].denials += entry.denials || 0;
+    states[state].entries.push(entry);
   });
 
   return states;
 }
 
+/* =========================================================
+   🔹 RENDER + INTERACTIVITY
+   ========================================================= */
+
+const dashboardEl = document.getElementById("dashboard");
+const emptyEl = document.getElementById("empty");
+const searchEl = document.getElementById("search");
+const sortEl = document.getElementById("sort");
+const resetBtn = document.getElementById("reset");
+
+let currentQuery = "";
+let currentSort = "rate";
+
 function renderDashboard() {
-  const dashboard = document.getElementById("dashboard");
+  dashboardEl.innerHTML = "";
   const data = buildStateDashboard(entries);
 
-  Object.values(data).forEach(s => {
-    const total = s.approvals + s.denials;
-    const rate = total ? Math.round((s.approvals / total) * 100) : 0;
+  let states = Object.values(data);
 
-    const card = document.createElement("div");
+  // filter by search
+  if (currentQuery && currentQuery.trim().length) {
+    const q = currentQuery.trim().toLowerCase();
+    states = states.filter(s => {
+      if (s.state.toLowerCase().includes(q)) return true;
+      // check judges and jurisdictions
+      return s.entries.some(e => {
+        return (e.judge && e.judge.toLowerCase().includes(q)) ||
+               (e.jurisdiction && e.jurisdiction.toLowerCase().includes(q)) ||
+               (e.notes && e.notes.toLowerCase().includes(q));
+      });
+    });
+  }
+
+  // compute rates & totals
+  states.forEach(s => {
+    s.total = s.approvals + s.denials;
+    s.rate = s.total > 0 ? Math.round((s.approvals / s.total) * 100) : 0;
+  });
+
+  // sort
+  states.sort((a,b) => {
+    if (currentSort === "rate") return b.rate - a.rate;
+    if (currentSort === "judges") return b.judges - a.judges;
+    if (currentSort === "approvals") return b.approvals - a.approvals;
+    return b.rate - a.rate;
+  });
+
+  if (states.length === 0) {
+    emptyEl.style.display = "";
+  } else {
+    emptyEl.style.display = "none";
+  }
+
+  states.forEach(state => {
+    const card = document.createElement("article");
     card.className = "card";
-    card.onclick = () => openModal(s);
-
+    card.setAttribute("tabindex", 0);
     card.innerHTML = `
-      <h2>${s.state}</h2>
-      <div class="rate">${rate}%</div>
+      <div class="card-head">
+        <div class="state-code" title="State code">${state.state}</div>
+        <div style="text-align:right">
+          <div class="rate" aria-hidden="true">${state.rate}%</div>
+          <div style="font-size:12px; color:var(--muted); margin-top:4px">${state.approvals} approvals • ${state.denials} denials</div>
+        </div>
+      </div>
+
       <div class="meta">
-        ${s.entries.length} Judges<br>
-        ${s.approvals} Approvals • ${s.denials} Denials
+        <div class="badge">${state.judges} Judges</div>
+        <div style="font-size:13px; color:var(--muted)">${state.total} Records</div>
+      </div>
+
+      <div class="stat"><strong>Approval rate</strong> (approvals / total)</div>
+
+      <div class="progress" aria-hidden="true"><i style="width:${state.rate}%"></i></div>
+
+      <button class="expand-btn" aria-expanded="false">Show judges ▾</button>
+
+      <div class="details" aria-hidden="true">
+        ${state.entries.map(e => `
+          <div class="entry">
+            <div>
+              <div class="judge">${escapeHtml(e.judge || "—")}</div>
+              <div style="color:var(--muted); font-size:12px">${escapeHtml(e.jurisdiction || "")}</div>
+            </div>
+            <div class="meta">
+              <div><strong>${e.approvals || 0}</strong> approvals</div>
+              <div style="color:${(e.denials||0)>0 ? 'var(--danger)': 'var(--muted)'}">${e.denials || 0} denials</div>
+            </div>
+          </div>
+        `).join("")}
       </div>
     `;
 
-    dashboard.appendChild(card);
+    // expand toggle
+    const expandBtn = card.querySelector(".expand-btn");
+    const details = card.querySelector(".details");
+    expandBtn.addEventListener("click", () => {
+      const open = details.classList.toggle("open");
+      expandBtn.setAttribute("aria-expanded", open ? "true" : "false");
+      details.setAttribute("aria-hidden", open ? "false" : "true");
+      expandBtn.textContent = open ? "Hide judges ▴" : "Show judges ▾";
+    });
+
+    // keyboard accessibility: Enter toggles details
+    card.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter" || ev.key === " ") {
+        ev.preventDefault();
+        expandBtn.click();
+      }
+    });
+
+    dashboardEl.appendChild(card);
+  });
+
+  // animate progress bars (in case of newly inserted elements)
+  requestAnimationFrame(() => {
+    document.querySelectorAll(".progress > i").forEach(el => {
+      const w = el.style.width || "0%";
+      el.style.width = "0%";
+      // tiny delay to trigger transition
+      setTimeout(()=> el.style.width = w, 60);
+    });
   });
 }
 
-function openModal(stateData) {
-  document.getElementById("modalTitle").textContent =
-    `${stateData.state} — Judge Details`;
-
-  const tbody = document.getElementById("modalTable");
-  tbody.innerHTML = "";
-
-  stateData.entries.forEach(e => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${e.judge || ""}</td>
-      <td>${e.jurisdiction || ""}</td>
-      <td class="approve">${e.approvals || 0}</td>
-      <td class="deny">${e.denials || 0}</td>
-      <td>${e.notes || ""}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-
-  document.getElementById("modal").style.display = "flex";
+function escapeHtml(s){
+  if (!s) return "";
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;");
 }
 
-function closeModal() {
-  document.getElementById("modal").style.display = "none";
-}
+/* =========================================================
+   🔹 UI wiring
+   ========================================================= */
 
+let debounceTimer = null;
+searchEl.addEventListener("input", (e) => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(()=> {
+    currentQuery = e.target.value || "";
+    renderDashboard();
+  }, 220);
+});
+
+sortEl.addEventListener("change", (e) => {
+  currentSort = e.target.value;
+  renderDashboard();
+});
+
+resetBtn.addEventListener("click", () => {
+  searchEl.value = "";
+  currentQuery = "";
+  sortEl.value = "rate";
+  currentSort = "rate";
+  renderDashboard();
+});
+
+/* initial render */
 renderDashboard();
+
 </script>
 
 </body>
