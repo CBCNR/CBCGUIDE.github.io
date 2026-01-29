@@ -1,216 +1,373 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>State & Insurance Settlement Funding Info - CBC Settlement Funding</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        select, input, textarea { margin: 10px; padding: 5px; display: block; }
-        #info, #courtTable { margin-top: 20px; border: 1px solid #ccc; padding: 10px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; cursor: pointer; }
-        th { background-color: #f2f2f2; }
-        .hidden { display: none; }
-        .easy { background-color: #d4edda; }
-        .medium { background-color: #fff3cd; }
-        .hard { background-color: #f8d7da; }
-        .high { color: green; font-weight: bold; }
-        .medium-rate { color: orange; font-weight: bold; }
-        .low { color: red; font-weight: bold; }
-        #summary { margin-bottom: 20px; font-weight: bold; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>State & Insurance Settlement Funding Info - CBC Settlement Funding</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    select, input, textarea { margin: 10px; padding: 5px; display: block; }
+    #info, #courtTable { margin-top: 20px; border: 1px solid #ccc; padding: 10px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; cursor: pointer; }
+    th { background-color: #f2f2f2; }
+    .hidden { display: none; }
+    .easy { background-color: #d4edda; }
+    .medium { background-color: #fff3cd; }
+    .hard { background-color: #f8d7da; }
+    .high { color: green; font-weight: bold; }
+    .medium-rate { color: orange; font-weight: bold; }
+    .low { color: red; font-weight: bold; }
+    #summary { margin-bottom: 20px; font-weight: bold; }
+  </style>
 </head>
+
 <body>
-    <h1>State & Insurance Settlement Funding Info - CBC Settlement Funding</h1>
+  <h1>State & Insurance Settlement Funding Info - CBC Settlement Funding</h1>
 
-    <h2>State & Insurance Search</h2>
-    <label for="state">Select State:</label>
-    <select id="state">
-        <option value="">--Choose State--</option>
+  <h2>State & Insurance Search</h2>
+  <label for="state">Select State:</label>
+  <select id="state"><option value="">--Choose State--</option></select>
+
+  <label for="insurance">Select Insurance Company:</label>
+  <select id="insurance"><option value="">--Choose Insurance--</option></select>
+
+  <button onclick="displayInfo()">Search</button>
+  <div id="info"></div>
+
+  <h2>Court Guide (Timelines, Judges, Feedback)</h2>
+  <p>Filter by state using the dropdown below. Data from your 2018–2025 records.</p>
+  <div id="summary"></div>
+
+  <label for="stateFilter">Filter by State:</label>
+  <select id="stateFilter" onchange="filterCourtGuide()">
+    <option value="all">All States</option>
+  </select>
+
+  <table id="courtTable">
+    <thead>
+      <tr>
+        <th onclick="sortTable(0)">Jurisdiction</th>
+        <th onclick="sortTable(1)">Judge</th>
+        <th onclick="sortTable(2)">Avg Time to Court Date</th>
+        <th onclick="sortTable(3)">Avg Future Offset</th>
+        <th onclick="sortTable(4)">Difficulty</th>
+        <th onclick="sortTable(5)">Approval Rate</th>
+        <th onclick="sortTable(6)">Total Cases</th>
+        <th onclick="sortTable(7)">Denial/Dismissal Notes</th>
+        <th onclick="sortTable(8)">Attorney-Client-IPA Info</th>
+      </tr>
+    </thead>
+    <tbody id="courtBody"></tbody>
+  </table>
+
+  <button onclick="exportCSV()">Export Table as CSV</button>
+
+  <h2>Add New Info</h2>
+  <form id="addForm">
+    <label for="type">Type:</label>
+    <select id="type" onchange="toggleCourtFields()">
+      <option value="state">State</option>
+      <option value="insurance">Insurance</option>
+      <option value="court">Court Guide</option>
     </select>
 
-    <label for="insurance">Select Insurance Company:</label>
-    <select id="insurance">
-        <option value="">--Choose Insurance--</option>
-    </select>
+    <label for="name">Name (State/Insurance/Judge):</label>
+    <input type="text" id="name">
 
-    <button onclick="displayInfo()">Search</button>
+    <label for="jurisdiction" class="courtField hidden">Jurisdiction:</label>
+    <input type="text" id="jurisdiction" class="courtField hidden">
 
-    <div id="info"></div>
+    <label for="avgTimeToDate" class="courtField hidden">Avg Time to Court Date:</label>
+    <input type="text" id="avgTimeToDate" class="courtField hidden">
 
-    <h2>Court Guide (Timelines, Judges, Feedback)</h2>
-    <p>Filter by state using the dropdown below. Data from your 2018-2025 records.</p>
+    <label for="avgFutureOffset" class="courtField hidden">Avg Future Offset:</label>
+    <input type="text" id="avgFutureOffset" class="courtField hidden">
 
-    <div id="summary"></div>
+    <label for="difficulty" class="courtField hidden">Difficulty:</label>
+    <input type="text" id="difficulty" class="courtField hidden">
 
-    <label for="stateFilter">Filter by State:</label>
-    <select id="stateFilter" onchange="populateStateFilter()">
-        <option value="all">All States</option>
-    </select>
+    <label for="approvalRate" class="courtField hidden">Approval Rate:</label>
+    <input type="text" id="approvalRate" class="courtField hidden">
 
-    <table id="courtTable">
-        <thead>
-            <tr>
-                <th onclick="sortTable(0)">Jurisdiction</th>
-                <th onclick="sortTable(1)">Judge</th>
-                <th onclick="sortTable(2)">Avg Time to Court Date</th>
-                <th onclick="sortTable(3)">Avg Future Offset</th>
-                <th onclick="sortTable(4)">Difficulty</th>
-                <th onclick="sortTable(5)">Approval Rate</th>
-                <th onclick="sortTable(6)">Total Cases</th>
-                <th onclick="sortTable(7)">Denial/Dismissal Notes</th>
-                <th onclick="sortTable(8)">Attorney-Client-IPA Info</th>
-            </tr>
-        </thead>
-        <tbody id="courtBody"></tbody>
-    </table>
+    <label for="totalCases" class="courtField hidden">Total Cases:</label>
+    <input type="number" id="totalCases" class="courtField hidden">
 
-    <button onclick="exportCSV()">Export Table as CSV</button>
+    <label for="denialNotes" class="courtField hidden">Denial/Dismissal Notes:</label>
+    <textarea id="denialNotes" class="courtField hidden"></textarea>
 
-    <h2>Add New Info</h2>
-    <form id="addForm">
-        <label for="type">Type:</label>
-        <select id="type" onchange="toggleCourtFields()">
-            <option value="state">State</option>
-            <option value="insurance">Insurance</option>
-            <option value="court">Court Guide</option>
-        </select>
+    <label for="ipaInfo" class="courtField hidden">Attorney-Client-IPA Info:</label>
+    <textarea id="ipaInfo" class="courtField hidden"></textarea>
 
-        <label for="name">Name (State/Insurance/Judge):</label>
-        <input type="text" id="name"><br>
+    <label for="details">General Details:</label>
+    <textarea id="details"></textarea>
 
-        <label for="jurisdiction" class="courtField hidden">Jurisdiction (e.g., State/County):</label>
-        <input type="text" id="jurisdiction" class="courtField hidden"><br>
+    <button type="button" onclick="addInfo()">Add</button>
+  </form>
 
-        <label for="avgTimeToDate" class="courtField hidden">Avg Time to Get Court Date:</label>
-        <input type="text" id="avgTimeToDate" class="courtField hidden"><br>
-
-        <label for="avgFutureOffset" class="courtField hidden">Avg Future Court Date Offset:</label>
-        <input type="text" id="avgFutureOffset" class="courtField hidden"><br>
-
-        <label for="difficulty" class="courtField hidden">Judge Difficulty:</label>
-        <input type="text" id="difficulty" class="courtField hidden"><br>
-
-        <label for="approvalRate" class="courtField hidden">Approval Rate:</label>
-        <input type="text" id="approvalRate" class="courtField hidden"><br>
-
-        <label for="totalCases" class="courtField hidden">Total Cases:</label>
-        <input type="number" id="totalCases" class="courtField hidden"><br>
-
-        <label for="denialNotes" class="courtField hidden">Denial/Dismissal Notes:</label>
-        <textarea id="denialNotes" class="courtField hidden"></textarea><br>
-
-        <label for="ipaInfo" class="courtField hidden">Attorney-Client-IPA Info:</label>
-        <textarea id="ipaInfo" class="courtField hidden"></textarea><br>
-
-        <label for="details">General Details (for State/Insurance):</label>
-        <textarea id="details"></textarea><br>
-
-        <button type="button" onclick="addInfo()">Add</button>
-    </form>
-
-    <script>
-        let data = {
-            states: {
-                "California": "Settlement funding in California typically requires court approval and can take 4-6 weeks. Interest rates average 2-3% monthly.",
-                "New York": "New York has strict usury laws; funding caps at 40% APR. Average approval time: 2-4 weeks.",
-                "Texas": "Texas allows non-recourse funding; no repayment if case lost. Processing time: 3-5 weeks."
-            },
-            insurances: {
-                "Allstate": "Allstate settlements often involve structured annuities; funding available up to 50% of expected value.",
-                "State Farm": "State Farm prefers quick settlements; funding companies report 70% approval rate for auto claims.",
-                "Geico": "Geico cases fund faster for personal injury; average advance: $10k-50k."
-            },
-            courtGuide: [
-                // --- Existing entries remain here (unchanged) ---
-                // ... [keep all your existing courtGuide objects above]
-
-                // --- New hard 0% entries from your provided screenshot ---
-                {
-                    jurisdiction: "Allegheny County Courthouse, PA",
-                    judge: "John T. McVay, JR",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Hard",
-                    approvalRate: "0%",
-                    totalCases: 2,
-                    denialNotes: "Prior transfers, docs issues, unlikely future approvals",
-                    ipaInfo: ""
-                },
-                {
-                    jurisdiction: "New York County Courthouse, NY",
-                    judge: "Jennifer G. Schecter",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Hard",
-                    approvalRate: "0%",
-                    totalCases: 3,
-                    denialNotes: "Multiple denials",
-                    ipaInfo: ""
-                },
-                {
-                    jurisdiction: "Monroe County Courthouse, NY",
-                    judge: "John Gallagher",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Hard",
-                    approvalRate: "0%",
-                    totalCases: 2,
-                    denialNotes: "Financial stability cited",
-                    ipaInfo: ""
-                },
-                {
-                    jurisdiction: "Imperial County Courthouse, CA",
-                    judge: "L. Brooks Anderholt",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Hard",
-                    approvalRate: "0%",
-                    totalCases: 2,
-                    denialNotes: "BHG objections",
-                    ipaInfo: ""
-                },
-                {
-                    jurisdiction: "King County Courthouse, WA",
-                    judge: "Regina Cahan",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Hard",
-                    approvalRate: "0%",
-                    totalCases: 2,
-                    denialNotes: "Dismissals",
-                    ipaInfo: ""
-                },
-                {
-                    jurisdiction: "Orange County Courthouse, FL",
-                    judge: "A. James Craner / Donald A. Myers",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Hard",
-                    approvalRate: "0%",
-                    totalCases: 2,
-                    denialNotes: "Dismissals",
-                    ipaInfo: ""
-                },
-                {
-                    jurisdiction: "Lehigh County Courthouse, PA",
-                    judge: "Brian Johnson / Michele A. Varricchio",
-                    avgTimeToDate: "Unknown",
-                    avgFutureOffset: "Unknown",
-                    difficulty: "Hard",
-                    approvalRate: "0%",
-                    totalCases: 2,
-                    denialNotes: "Dismissals",
-                    ipaInfo: ""
-                }
-            ]
+  <script>
+    // --- Data Object ---
+    const data = {
+      states: {
+        "California": "Settlement funding in California typically requires court approval and can take 4-6 weeks. Interest rates average 2-3% monthly.",
+        "New York": "New York has strict usury laws; funding caps at 40% APR. Average approval time: 2-4 weeks.",
+        "Texas": "Texas allows non-recourse funding; no repayment if case lost. Processing time: 3-5 weeks."
+      },
+      insurances: {
+        "Allstate": "Allstate settlements often involve structured annuities; funding available up to 50% of expected value.",
+        "State Farm": "State Farm prefers quick settlements; funding companies report 70% approval rate for auto claims.",
+        "Geico": "Geico cases fund faster for personal injury; average advance: $10k-50k."
+      },
+      courtGuide: [
+        // ... (Your original entries above remain)
+        {
+          jurisdiction: "Allegheny County Courthouse, PA",
+          judge: "John T. McVay, JR",
+          avgTimeToDate: "Unknown",
+          avgFutureOffset: "Unknown",
+          difficulty: "Hard",
+          approvalRate: "0%",
+          totalCases: 2,
+          denialNotes: "Prior transfers, docs issues, unlikely future approvals",
+          ipaInfo: ""
+        },
+        {
+          jurisdiction: "New York County Courthouse, NY",
+          judge: "Jennifer G. Schecter",
+          avgTimeToDate: "Unknown",
+          avgFutureOffset: "Unknown",
+          difficulty: "Hard",
+          approvalRate: "0%",
+          totalCases: 3,
+          denialNotes: "Multiple denials",
+          ipaInfo: ""
+        },
+        {
+          jurisdiction: "Monroe County Courthouse, NY",
+          judge: "John Gallagher",
+          avgTimeToDate: "Unknown",
+          avgFutureOffset: "Unknown",
+          difficulty: "Hard",
+          approvalRate: "0%",
+          totalCases: 2,
+          denialNotes: "Financial stability cited",
+          ipaInfo: ""
+        },
+        {
+          jurisdiction: "Imperial County Courthouse, CA",
+          judge: "L. Brooks Anderholt",
+          avgTimeToDate: "Unknown",
+          avgFutureOffset: "Unknown",
+          difficulty: "Hard",
+          approvalRate: "0%",
+          totalCases: 2,
+          denialNotes: "BHG objections",
+          ipaInfo: ""
+        },
+        {
+          jurisdiction: "King County Courthouse, WA",
+          judge: "Regina Cahan",
+          avgTimeToDate: "Unknown",
+          avgFutureOffset: "Unknown",
+          difficulty: "Hard",
+          approvalRate: "0%",
+          totalCases: 2,
+          denialNotes: "Dismissals",
+          ipaInfo: ""
+        },
+        {
+          jurisdiction: "Orange County Courthouse, FL",
+          judge: "A. James Craner / Donald A. Myers",
+          avgTimeToDate: "Unknown",
+          avgFutureOffset: "Unknown",
+          difficulty: "Hard",
+          approvalRate: "0%",
+          totalCases: 2,
+          denialNotes: "Dismissals",
+          ipaInfo: ""
+        },
+        {
+          jurisdiction: "Lehigh County Courthouse, PA",
+          judge: "Brian Johnson / Michele A. Varricchio",
+          avgTimeToDate: "Unknown",
+          avgFutureOffset: "Unknown",
+          difficulty: "Hard",
+          approvalRate: "0%",
+          totalCases: 2,
+          denialNotes: "Dismissals",
+          ipaInfo: ""
         }
+      ]
+    };
 
-        // Continue your existing JavaScript functions as before:
-        // (displayInfo, populateStateFilter, sortTable, addInfo, exportCSV, etc.)
-        // Nothing else is removed or altered.
+    // --- Functions ---
+    function populateStates() {
+      const stateSelect = document.getElementById('state');
+      Object.keys(data.states).forEach(state => {
+        const option = document.createElement('option');
+        option.value = state;
+        option.textContent = state;
+        stateSelect.appendChild(option);
+      });
+    }
 
-    </script>
+    function populateInsurances() {
+      const insSelect = document.getElementById('insurance');
+      Object.keys(data.insurances).forEach(ins => {
+        const option = document.createElement('option');
+        option.value = ins;
+        option.textContent = ins;
+        insSelect.appendChild(option);
+      });
+    }
+
+    function displayInfo() {
+      const stateVal = document.getElementById('state').value;
+      const insVal = document.getElementById('insurance').value;
+      const infoDiv = document.getElementById('info');
+      let output = '';
+
+      if (stateVal && data.states[stateVal]) {
+        output += `<h3>${stateVal}</h3><p>${data.states[stateVal]}</p>`;
+      }
+      if (insVal && data.insurances[insVal]) {
+        output += `<h3>${insVal}</h3><p>${data.insurances[insVal]}</p>`;
+      }
+      infoDiv.innerHTML = output || '<p>Please select a state or insurance company.</p>';
+    }
+
+    function renderCourtGuide(filter = 'all') {
+      const tbody = document.getElementById('courtBody');
+      tbody.innerHTML = '';
+
+      const filtered = data.courtGuide.filter(item => {
+        if (filter === 'all') return true;
+        return item.jurisdiction.toLowerCase().includes(filter.toLowerCase());
+      });
+
+      filtered.forEach(court => {
+        const tr = document.createElement('tr');
+        tr.classList.add(court.difficulty.toLowerCase());
+        tr.innerHTML = `
+          <td>${court.jurisdiction}</td>
+          <td>${court.judge}</td>
+          <td>${court.avgTimeToDate}</td>
+          <td>${court.avgFutureOffset}</td>
+          <td>${court.difficulty}</td>
+          <td>${court.approvalRate}</td>
+          <td>${court.totalCases}</td>
+          <td>${court.denialNotes}</td>
+          <td>${court.ipaInfo}</td>`;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('summary').textContent = `Total Records: ${filtered.length}`;
+    }
+
+    function populateStateFilter() {
+      const allStates = new Set();
+      data.courtGuide.forEach(c => {
+        const match = c.jurisdiction.match(/,\s*([A-Z]{2})$/);
+        if (match) allStates.add(match[1]);
+      });
+      const select = document.getElementById('stateFilter');
+      Array.from(allStates).sort().forEach(st => {
+        const opt = document.createElement('option');
+        opt.value = st;
+        opt.textContent = st;
+        select.appendChild(opt);
+      });
+    }
+
+    function filterCourtGuide() {
+      const val = document.getElementById('stateFilter').value;
+      renderCourtGuide(val === 'all' ? 'all' : val);
+    }
+
+    function sortTable(n) {
+      const table = document.getElementById("courtTable");
+      let switching = true;
+      let dir = "asc";
+      while (switching) {
+        switching = false;
+        const rows = table.rows;
+        for (let i = 1; i < (rows.length - 1); i++) {
+          let shouldSwitch = false;
+          const x = rows[i].getElementsByTagName("TD")[n];
+          const y = rows[i + 1].getElementsByTagName("TD")[n];
+          if (dir === "asc" && x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+            shouldSwitch = true;
+            break;
+          }
+          if (dir === "desc" && x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+            shouldSwitch = true;
+            break;
+          }
+          if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+          }
+        }
+        if (!switching && dir === "asc") { dir = "desc"; switching = true; }
+      }
+    }
+
+    function exportCSV() {
+      const rows = document.querySelectorAll("#courtTable tr");
+      let csv = [];
+      rows.forEach(row => {
+        const cols = row.querySelectorAll("td, th");
+        csv.push(Array.from(cols).map(col => `"${col.innerText}"`).join(","));
+      });
+      const blob = new Blob([csv.join("\n")], { type: "text/csv" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "court_data.csv";
+      a.click();
+    }
+
+    function toggleCourtFields() {
+      const isCourt = document.getElementById('type').value === 'court';
+      document.querySelectorAll('.courtField').forEach(el => {
+        el.classList.toggle('hidden', !isCourt);
+      });
+    }
+
+    function addInfo() {
+      const type = document.getElementById('type').value;
+
+      if (type === 'state') {
+        const name = document.getElementById('name').value.trim();
+        const details = document.getElementById('details').value.trim();
+        if (name && details) data.states[name] = details;
+      } else if (type === 'insurance') {
+        const name = document.getElementById('name').value.trim();
+        const details = document.getElementById('details').value.trim();
+        if (name && details) data.insurances[name] = details;
+      } else {
+        const court = {
+          jurisdiction: document.getElementById('jurisdiction').value,
+          judge: document.getElementById('name').value,
+          avgTimeToDate: document.getElementById('avgTimeToDate').value,
+          avgFutureOffset: document.getElementById('avgFutureOffset').value,
+          difficulty: document.getElementById('difficulty').value,
+          approvalRate: document.getElementById('approvalRate').value,
+          totalCases: parseInt(document.getElementById('totalCases').value) || 0,
+          denialNotes: document.getElementById('denialNotes').value,
+          ipaInfo: document.getElementById('ipaInfo').value
+        };
+        data.courtGuide.push(court);
+      }
+      renderCourtGuide();
+    }
+
+    // --- Initialize on load ---
+    window.onload = () => {
+      populateStates();
+      populateInsurances();
+      populateStateFilter();
+      renderCourtGuide();
+    };
+  </script>
 </body>
 </html>
